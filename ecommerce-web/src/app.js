@@ -1,40 +1,54 @@
+/* eslint-disable no-unused-vars */
 /*
 ================================================================================
-ARQUIVO: src/App.js
+ARQUIVO: src/App.js (CORRIGIDO)
 ================================================================================
 */
-import React, { useState } from "react";
-import { graphqlClient } from "./api/client";
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
+import axios from "axios";
 
 // Importando Provedores de Contexto
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext";
-
-// Importando Componentes de Layout
-import { Header } from "../src/components/layout/Header";
-import { Footer } from "../src/components/layout/Footer";
+import { CartProvider, useCart } from "./context/CartContext";
+import { FavoritesProvider, useFavorites } from "./context/FavoritesContext"; // Importado
 
 // Importando Páginas
-import { HomePage } from "../src/pages/HomePage";
-import { LoginPage } from "../src/pages/LoginPage";
-import { CartPage } from "../src/pages/CartPage";
-import { OrdersPage } from "../src/pages/OrdersPage";
+import { HomePage } from "./pages/HomePage";
+import { LoginPage } from "./pages/LoginPage";
+import { CartPage } from "./pages/CartPage";
+import { OrdersPage } from "./pages/OrdersPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessPage } from "./pages/SuccessPage";
-import { AdminPage } from "../src/pages/AdminPage";
-import { SearchPage } from "../src/pages/SearchPage";
-import { CategoriesPage } from "../src/pages/CategoriesPage";
+import { AdminPage } from "./pages/AdminPage";
+import { SearchPage } from "./pages/SearchPage";
+import { CategoriesPage } from "./pages/CategoriesPage";
+import { FavoritesPage } from "./pages/FavoritesPage";
+
+// Importando Componentes de Layout e UI
+import { Header } from "./components/layout/Header";
+import { Footer } from "./components/layout/Footer";
+import { Spinner } from "./components/ui/Spinner";
+
+// Importando Funções de API
+import { graphqlClient } from "./api/client";
 
 // Componente que gerencia o conteúdo principal da aplicação
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    // Você pode adicionar um spinner de tela cheia aqui se desejar
     return (
       <div className="h-screen w-screen flex items-center justify-center">
-        Carregando...
+        <Spinner />
       </div>
     );
   }
@@ -71,7 +85,7 @@ const Dashboard = () => {
   const renderPage = () => {
     switch (page) {
       case "home":
-        return <HomePage setPage={setPage} />;
+        return <HomePage />;
       case "cart":
         return <CartPage setPage={setPage} />;
       case "orders":
@@ -94,8 +108,10 @@ const Dashboard = () => {
         );
       case "categories":
         return <CategoriesPage />;
+      case "favorites":
+        return <FavoritesPage />;
       default:
-        return <HomePage setPage={setPage} />;
+        return <HomePage />;
     }
   };
 
@@ -117,9 +133,13 @@ const Dashboard = () => {
 const App = () => {
   return (
     <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
+      <FavoritesProvider>
+        {" "}
+        {/* O FavoritesProvider agora envolve tudo que precisa de seus dados */}
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </FavoritesProvider>
     </AuthProvider>
   );
 };

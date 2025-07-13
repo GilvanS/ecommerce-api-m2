@@ -1,23 +1,43 @@
 /*
 ================================================================================
-ARQUIVO: src/pages/ProfilePage.js
+ARQUIVO: src/pages/ProfilePage.js (CORRIGIDO)
 ================================================================================
 */
 import React from "react";
 
-// Importando o contexto para acessar os dados do usuário
+// Importando o contexto de autenticação
 import { useAuth } from "../context/AuthContext";
 
-// Importando componentes de UI
+// Importando componentes de UI e Ícones
 import { Spinner } from "../components/ui/Spinner";
-
-// Importando Ícones
 import { User } from "../components/shared/Icons";
 
 export const ProfilePage = () => {
+  // Adicionando 'loading' do contexto de autenticação
   const { userProfile, loading } = useAuth();
 
-  // Exibe um spinner enquanto os dados do perfil estão sendo carregados
+  // Função para formatar a data de forma segura
+  const formatDate = (dateString) => {
+    if (
+      typeof dateString !== "string" ||
+      dateString.trim() === "" ||
+      dateString === "0000-00-00 00:00:00"
+    ) {
+      return "Data indisponível";
+    }
+    const date = new Date(Number(dateString));
+
+    if (isNaN(date.getTime())) return "Data Inválida";
+
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  // Exibe o spinner enquanto o contexto está a carregar os dados do perfil.
+  // Isso garante que não tentaremos renderizar dados parciais.
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center">
@@ -26,16 +46,12 @@ export const ProfilePage = () => {
     );
   }
 
-  // Exibe uma mensagem caso o perfil não seja encontrado
+  // Se, após o carregamento, ainda não houver perfil, exibe uma mensagem.
   if (!userProfile) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold text-red-600">
-          Perfil não encontrado
-        </h1>
-        <p className="text-slate-600 mt-2">
-          Não foi possível carregar os dados do seu perfil. Por favor, tente
-          fazer login novamente.
+        <p className="text-slate-600">
+          Não foi possível carregar as informações do perfil.
         </p>
       </div>
     );
@@ -47,7 +63,7 @@ export const ProfilePage = () => {
         <User className="w-8 h-8" />
         Meu Perfil
       </h1>
-      <div className="bg-white rounded-xl shadow-md p-8 max-w-2xl mx-auto">
+      <div className="bg-white rounded-xl shadow-md p-8">
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row">
             <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
@@ -55,34 +71,38 @@ export const ProfilePage = () => {
             </p>
             <p className="font-medium text-slate-800">{userProfile.name}</p>
           </div>
-          <hr />
           <div className="flex flex-col sm:flex-row">
             <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
               Nome de Usuário
             </p>
             <p className="font-medium text-slate-800">{userProfile.username}</p>
           </div>
-          <hr />
           <div className="flex flex-col sm:flex-row">
             <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
               Idade
             </p>
             <p className="font-medium text-slate-800">{userProfile.age} anos</p>
           </div>
-          <hr />
           <div className="flex flex-col sm:flex-row">
             <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
               Localização
             </p>
             <p className="font-medium text-slate-800">{`${userProfile.city}, ${userProfile.state}`}</p>
           </div>
-          <hr />
+          <div className="flex flex-col sm:flex-row">
+            <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
+              Papel (Role)
+            </p>
+            <p className="font-medium text-slate-800 capitalize">
+              {userProfile.role}
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row">
             <p className="w-full sm:w-1/3 text-slate-500 font-semibold">
               Membro Desde
             </p>
             <p className="font-medium text-slate-800">
-              {new Date(userProfile.created_at).toLocaleDateString("pt-BR")}
+              {formatDate(userProfile.created_at)}
             </p>
           </div>
         </div>

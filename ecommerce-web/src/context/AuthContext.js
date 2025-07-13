@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
       if (isAuthenticated) {
         try {
           const data = await graphqlClient(
-            `query { profile { id name age city state username role } }`
+            `query { profile { id name age city state username role created_at } }`
           );
           setUserProfile(data.profile);
         } catch (error) {

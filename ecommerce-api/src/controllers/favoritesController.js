@@ -1,4 +1,6 @@
 const db = require("../config/database");
+
+// Adiciona ou remove um produto dos favoritos do usuário
 exports.toggleFavorite = async (req, res) => {
   const { productId } = req.body;
   const userId = req.user.id;

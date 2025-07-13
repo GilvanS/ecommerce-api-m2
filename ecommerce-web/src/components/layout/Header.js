@@ -1,13 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+/*
+================================================================================
+ARQUIVO: src/components/layout/Header.js (CORRIGIDO)
+================================================================================
+*/
 import React, { useMemo } from "react";
 
 // Importando contextos para dados globais
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useFavorites } from "../../context/FavoritesContext"; // Importado
 
-// Importando componentes
+// Importando componentes e ícones
 import { Logo } from "../shared/Logo2";
-import { User, Heart, ShoppingBag, Search, Shield } from "../shared/Icons";
+import { User, Heart, ShoppingBag, Search, Shield, X } from "../shared/Icons";
 
 export const Header = ({
   setPage,
@@ -16,15 +22,14 @@ export const Header = ({
   setSearchTerm,
 }) => {
   const { cart } = useCart();
+  const { favoritesCount } = useFavorites(); // Consumindo o contexto de favoritos
   const { isAuthenticated, userProfile, logout } = useAuth();
 
-  // Calcula o número total de itens no carrinho
   const cartItemCount = useMemo(
     () => cart.reduce((acc, item) => acc + item.quantity, 0),
     [cart]
   );
 
-  // Função para submeter a busca
   const onSearchSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -32,7 +37,6 @@ export const Header = ({
     }
   };
 
-  // Função para limpar o campo de busca e voltar para a home
   const clearSearch = () => {
     setSearchTerm("");
     setPage("home");
@@ -40,7 +44,6 @@ export const Header = ({
 
   return (
     <header className="sticky top-0 bg-white z-20">
-      {/* Barra Superior */}
       <div className="bg-white border-b border-gray-200 py-2 text-sm">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div>{/* Espaço para links de redes sociais, etc. */}</div>
@@ -69,14 +72,16 @@ export const Header = ({
                 Login / Registro
               </a>
             )}
-            <a href="#" className="hover:text-pink-500">
+            <button
+              onClick={() => setPage("favorites")}
+              className="hover:text-pink-500"
+            >
               Favoritos
-            </a>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Cabeçalho Principal */}
       <div className="bg-white border-b border-gray-200 py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="cursor-pointer" onClick={() => setPage("home")}>
@@ -99,7 +104,9 @@ export const Header = ({
                   type="button"
                   onClick={clearSearch}
                   className="h-full px-2 text-gray-400 hover:text-gray-600"
-                ></button>
+                >
+                  <X className="w-5 h-5" />
+                </button>
               )}
               <button
                 type="submit"
@@ -116,10 +123,13 @@ export const Header = ({
             >
               <User />
             </button>
-            <button className="hover:text-pink-500 relative">
+            <button
+              onClick={() => setPage("favorites")}
+              className="hover:text-pink-500 relative"
+            >
               <Heart />
               <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                0
+                {favoritesCount}
               </span>
             </button>
             <button
@@ -135,7 +145,6 @@ export const Header = ({
         </div>
       </div>
 
-      {/* Barra de Navegação */}
       <nav className="bg-white shadow-md">
         <div className="container mx-auto px-4 flex justify-center">
           <ul className="flex space-x-8 font-medium">

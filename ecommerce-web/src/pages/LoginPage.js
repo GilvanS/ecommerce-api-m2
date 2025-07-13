@@ -116,7 +116,7 @@ export const LoginPage = () => {
                   onChange={handleInputChange}
                   placeholder="Estado"
                   error={errors.state}
-                  maxLength="2"
+                  maxLength="15"
                 />
                 <hr />
               </>
