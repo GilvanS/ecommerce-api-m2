@@ -14,9 +14,9 @@ const app_main = express_app();
 app_main.use(cors_app());
 app_main.use(express_app.json());
 
-// GraphQL Endpoint
+// GraphQL Endpoint teste
 app_main.use(
-  "/graphql",
+  "/graphqlteste",
   graphqlHTTP((req) => {
     const authHeader = req.headers.authorization;
     let user = null;
