@@ -140,7 +140,7 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 rounded-md text-white bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300"
+              className="px-6 py-2 rounded-md text-white bg-merqado-orange hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light"
             >
               {isSubmitting ? "Salvando..." : "Salvar Produto"}
             </button>
@@ -250,7 +250,7 @@ export const AdminPage = () => {
         </h1>
         <button
           onClick={handleAddProduct}
-          className="flex items-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600"
+          className="flex items-center gap-2 px-4 py-2 bg-merqado-orange text-white rounded-md hover:bg-merqado-orange-dark"
         >
           <PlusCircle className="w-5 h-5" />
           Adicionar Produto

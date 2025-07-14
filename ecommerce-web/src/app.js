@@ -135,7 +135,6 @@ const App = () => {
     <AuthProvider>
       <FavoritesProvider>
         {" "}
-        {/* O FavoritesProvider agora envolve tudo que precisa de seus dados */}
         <CartProvider>
           <AppContent />
         </CartProvider>

@@ -28,7 +28,7 @@ export const CartPage = ({ setPage }) => {
           <p className="text-slate-600 text-lg">Seu carrinho está vazio.</p>
           <button
             onClick={() => setPage("home")}
-            className="mt-4 bg-pink-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-pink-600 transition-colors"
+            className="mt-4 bg-merqado-orange text-white font-bold py-3 px-6 rounded-lg hover:bg-merqado-orange-dark transition-colors"
           >
             Continuar Comprando
           </button>
@@ -99,13 +99,13 @@ export const CartPage = ({ setPage }) => {
         <div className="p-6 bg-slate-50 rounded-b-xl flex flex-col md:flex-row justify-between items-center">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <p className="text-slate-600 text-lg">Total</p>
-            <p className="text-3xl font-bold text-pink-500">
+            <p className="text-3xl font-bold text-merqado-orange-dark">
               {formatCurrency(total)}
             </p>
           </div>
           <button
             onClick={() => setPage("checkout")}
-            className="w-full md:w-auto bg-pink-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-pink-600 transition-colors"
+            className="w-full md:w-auto bg-merqado-orange text-white font-bold py-3 px-8 rounded-lg hover:bg-merqado-orange-dark transition-colors"
           >
             Finalizar Compra
           </button>

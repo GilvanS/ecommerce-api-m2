@@ -44,22 +44,22 @@ export const Header = ({
 
   return (
     <header className="sticky top-0 bg-white z-20">
-      <div className="bg-white border-b border-gray-200 py-2 text-sm">
+      <div className="bg-merqado-gray-light border-b border-gray-200 py-2 text-sm">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div>{/* Espaço para links de redes sociais, etc. */}</div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 text-merqado-gray-dark">
             {isAuthenticated ? (
               <>
                 {userProfile?.role === "admin" && (
                   <button
                     onClick={() => setPage("admin")}
-                    className="flex items-center gap-1 hover:text-pink-500"
+                    className="flex items-center gap-1 hover:text-merqado-blue"
                   >
                     <Shield className="w-4 h-4" />
                     Admin
                   </button>
                 )}
-                <button onClick={logout} className="hover:text-pink-500">
+                <button onClick={logout} className="hover:text-merqado-blue">
                   Sair
                 </button>
               </>
@@ -67,14 +67,14 @@ export const Header = ({
               <a
                 href="#"
                 onClick={(e) => e.preventDefault()}
-                className="hover:text-pink-500"
+                className="hover:text-merqado-blue"
               >
                 Login / Registro
               </a>
             )}
             <button
               onClick={() => setPage("favorites")}
-              className="hover:text-pink-500"
+              className="hover:text-merqado-blue"
             >
               Favoritos
             </button>
@@ -82,7 +82,7 @@ export const Header = ({
         </div>
       </div>
 
-      <div className="bg-white border-b border-gray-200 py-4">
+      <div className="bg-white py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="cursor-pointer" onClick={() => setPage("home")}>
             <Logo />
@@ -96,7 +96,7 @@ export const Header = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Pesquisar produto..."
-              className="w-full border border-gray-300 rounded-md py-2 pl-4 pr-20 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full border border-gray-300 rounded-md py-2 pl-4 pr-20 focus:outline-none focus:ring-2 focus:ring-merqado-blue"
             />
             <div className="absolute right-0 top-0 h-full flex items-center">
               {searchTerm && (
@@ -110,7 +110,7 @@ export const Header = ({
               )}
               <button
                 type="submit"
-                className="h-full px-4 text-gray-600 hover:text-pink-500"
+                className="absolute right-0 top-0 h-full px-4 text-gray-600 hover:text-merqado-blue"
               >
                 <Search />
               </button>
@@ -119,25 +119,25 @@ export const Header = ({
           <div className="flex items-center space-x-6">
             <button
               onClick={() => setPage("profile")}
-              className="hover:text-pink-500"
+              className="hover:text-merqado-blue"
             >
               <User />
             </button>
             <button
               onClick={() => setPage("favorites")}
-              className="hover:text-pink-500 relative"
+              className="hover:text-merqado-blue relative"
             >
               <Heart />
-              <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-merqado-orange text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                 {favoritesCount}
               </span>
             </button>
             <button
               onClick={() => setPage("cart")}
-              className="hover:text-pink-500 relative"
+              className="hover:text-merqado-blue relative"
             >
               <ShoppingBag />
-              <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-merqado-orange text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                 {cartItemCount}
               </span>
             </button>
@@ -155,7 +155,7 @@ export const Header = ({
                   e.preventDefault();
                   setPage("home");
                 }}
-                className="block py-4 text-gray-800 hover:text-pink-500 border-b-2 border-transparent hover:border-pink-500"
+                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
               >
                 Início
               </a>
@@ -167,7 +167,7 @@ export const Header = ({
                   e.preventDefault();
                   setPage("categories");
                 }}
-                className="block py-4 text-gray-800 hover:text-pink-500 border-b-2 border-transparent hover:border-pink-500"
+                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
               >
                 Categorias
               </a>
@@ -179,7 +179,7 @@ export const Header = ({
                   e.preventDefault();
                   setPage("orders");
                 }}
-                className="block py-4 text-gray-800 hover:text-pink-500 border-b-2 border-transparent hover:border-pink-500"
+                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
               >
                 Meus Pedidos
               </a>

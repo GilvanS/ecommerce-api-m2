@@ -182,7 +182,7 @@ export const CheckoutPage = ({ setPage }) => {
                   onClick={() => setPaymentMethod("credit_card")}
                   className={`flex items-center space-x-2 p-3 border-b-2 ${
                     paymentMethod === "credit_card"
-                      ? "border-pink-500 text-pink-600"
+                      ? "border-merqado-orange text-merqado-orange-dark"
                       : "border-transparent text-slate-500"
                   }`}
                 >
@@ -194,7 +194,7 @@ export const CheckoutPage = ({ setPage }) => {
                   onClick={() => setPaymentMethod("boleto")}
                   className={`flex items-center space-x-2 p-3 border-b-2 ${
                     paymentMethod === "boleto"
-                      ? "border-pink-500 text-pink-600"
+                      ? "border-merqado-orange text-merqado-orange-dark"
                       : "border-transparent text-slate-500"
                   }`}
                 >
@@ -206,7 +206,7 @@ export const CheckoutPage = ({ setPage }) => {
                   onClick={() => setPaymentMethod("pix")}
                   className={`flex items-center space-x-2 p-3 border-b-2 ${
                     paymentMethod === "pix"
-                      ? "border-pink-500 text-pink-600"
+                      ? "border-merqado-orange text-merqado-orange-dark"
                       : "border-transparent text-slate-500"
                   }`}
                 >
@@ -282,7 +282,7 @@ export const CheckoutPage = ({ setPage }) => {
             <button
               type="submit"
               disabled={isProcessing}
-              className="w-full bg-pink-500 text-white font-bold py-4 rounded-lg text-lg hover:bg-pink-600 disabled:bg-pink-300 flex justify-center items-center"
+              className="w-full bg-merqado-orange text-white font-bold py-4 rounded-lg text-lg hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light flex justify-center items-center"
             >
               {isProcessing ? <Spinner /> : `Pagar ${formatCurrency(total)}`}
             </button>

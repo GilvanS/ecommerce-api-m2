@@ -7,7 +7,7 @@ export const Input = ({ name, error, ...rest }) => (
       className={`w-full px-3 py-2 border rounded-md transition-colors bg-white ${
         error
           ? "border-red-500 focus:border-red-500 focus:ring-red-500/50"
-          : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-500/50"
+          : "border-merqado-gray-medium/50 focus:border-merqado-blue focus:ring-merqado-blue/50"
       }`}
       {...rest}
     />

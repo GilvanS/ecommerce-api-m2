@@ -75,7 +75,7 @@ const OrderDetail = ({ order }) => {
           </div>
           <div className="text-right">
             <h3 className="font-semibold text-slate-700">Total do Pedido</h3>
-            <p className="text-xl font-bold text-pink-500">
+            <p className="text-xl font-bold text-merqado-orange">
               {formatCurrency(order.total_price)}
             </p>
           </div>

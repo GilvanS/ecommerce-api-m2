@@ -34,7 +34,7 @@ export const SuccessPage = ({ setPage }) => {
         </p>
         <button
           onClick={() => setPage("home")}
-          className="mt-8 bg-pink-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-pink-600 transition-colors"
+          className="mt-8 bg-merqado-orange text-white font-bold py-3 px-6 rounded-lg hover:bg-merqado-orange-dark transition-colors"
         >
           Voltar para a Loja
         </button>

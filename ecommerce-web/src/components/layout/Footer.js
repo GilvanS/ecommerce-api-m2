@@ -30,22 +30,22 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Categorias Populares</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Eletrônicos
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Roupas Femininas
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Roupas Masculinas
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Cosméticos
                 </a>
               </li>
@@ -57,22 +57,22 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Nossa Empresa</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Sobre Nós
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Contato
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Termos e Condições
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-pink-500">
+                <a href="#" className="hover:text-merqado-orange">
                   Política de Privacidade
                 </a>
               </li>

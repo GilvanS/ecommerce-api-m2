@@ -37,19 +37,19 @@ export const ProductCardV2 = ({ product }) => {
             onClick={() => toggleFavorite(product)}
             className={`p-2 rounded-full transition-colors ${
               favorited
-                ? "bg-pink-500 text-white"
-                : "bg-white text-gray-700 hover:bg-pink-500 hover:text-white"
+                ? "bg-merqado-orange text-white"
+                : "bg-white text-gray-700 hover:bg-merqado-orange hover:text-white"
             }`}
           >
             <Heart className={favorited ? "fill-current" : ""} />
           </button>
-          <button className="bg-white p-2 rounded-full text-gray-700 hover:bg-pink-500 hover:text-white transition-colors">
+          <button className="bg-white p-2 rounded-full text-gray-700 hover:bg-merqado-orange hover:text-white transition-colors">
             <Eye />
           </button>
         </div>
 
         {product.is_new && (
-          <span className="absolute top-3 left-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+          <span className="absolute top-3 left-3 bg-merqado-orange text-white text-xs font-bold px-2 py-1 rounded-md">
             NOVO
           </span>
         )}
@@ -71,12 +71,12 @@ export const ProductCardV2 = ({ product }) => {
         </div>
 
         <div className="flex justify-between items-center">
-          <p className="font-bold text-pink-500 text-lg">
+          <p className="font-bold text-merqado-orange text-lg">
             {formatCurrency(product.price)}
           </p>
           <button
             onClick={() => addToCart(product)}
-            className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-pink-500 transition-colors"
+            className="bg-gray-800 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-merqado-orange transition-colors"
           >
             Adicionar
           </button>

@@ -150,7 +150,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 rounded-md shadow-sm font-medium text-white bg-pink-500 hover:bg-pink-600 disabled:bg-pink-400"
+              className="w-full flex justify-center py-3 px-4 rounded-md shadow-sm font-medium text-white bg-merqado-orange hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -170,7 +170,7 @@ export const LoginPage = () => {
                 setSuccess("");
                 setValues(initialValues);
               }}
-              className="font-medium text-pink-500 hover:text-pink-600 ml-1"
+              className="font-medium text-merqado-orange hover:text-merqado-orange-dark ml-1"
             >
               {isLogin ? "Registre-se" : "Faça login"}
             </button>

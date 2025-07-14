@@ -30,7 +30,7 @@ export const FavoritesPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-        <Heart className="w-8 h-8 text-pink-500" />
+        <Heart className="w-8 h-8 text-merqado-orange" />
         Meus Favoritos
       </h1>
       {favoriteProducts.length === 0 ? (
