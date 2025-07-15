@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /*
 ================================================================================
 ARQUIVO: src/components/layout/Header.js (CORRIGIDO)
 ================================================================================
 */
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 // Importando contextos para dados globais
 import { useAuth } from "../../context/AuthContext";
@@ -29,6 +30,15 @@ export const Header = ({
     () => cart.reduce((acc, item) => acc + item.quantity, 0),
     [cart]
   );
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const onSearchSubmit = (e) => {
     e.preventDefault();

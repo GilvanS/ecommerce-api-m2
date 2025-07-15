@@ -6,10 +6,10 @@ import { useFavorites } from "../../context/FavoritesContext";
 
 // Importando o utilitário de formatação de moeda
 import { formatCurrency } from "../../utils/formatters";
+import { StarRating } from "../shared/StarRating";
 
 // Importando Ícones
-import { Heart, Eye, Star } from "../shared/Icons";
-
+import { Heart, Eye } from "../shared/Icons";
 export const ProductCardV2 = ({ product }) => {
   const { addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -19,6 +19,7 @@ export const ProductCardV2 = ({ product }) => {
   }
 
   const favorited = isFavorite(product.id);
+  const rating = Math.random() * 5;
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden group transition-shadow duration-300 hover:shadow-xl">
@@ -65,11 +66,8 @@ export const ProductCardV2 = ({ product }) => {
         </h3>
 
         <div className="flex items-center my-2">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-          ))}
+          <StarRating rating={rating} />
         </div>
-
         <div className="flex justify-between items-center">
           <p className="font-bold text-merqado-orange text-lg">
             {formatCurrency(product.price)}

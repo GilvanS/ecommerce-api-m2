@@ -20,6 +20,12 @@ module.exports = {
           dark: "#333333", // Cinza escuro para textos principais
         },
       },
+      backdropBlur: {
+        xs: "2px",
+        sm: "4px",
+        md: "8px",
+        lg: "16px",
+      },
     },
   },
   plugins: [],

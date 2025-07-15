@@ -1,21 +1,15 @@
 /*
 ================================================================================
-ARQUIVO: src/pages/OrdersPage.js
+ARQUIVO: src/pages/OrdersPage.js (ATUALIZADO)
 ================================================================================
 */
-import React, { useState, useEffect } from "react";
-
-// Importando o cliente GraphQL para buscar dados
+import React, { useState, useEffect, useCallback } from "react";
 import { graphqlClient } from "../api/client";
-
-// Importando componentes de UI e utilitários
 import { Spinner } from "../components/ui/Spinner";
+import { Pagination } from "../components/ui/Pagination";
 import { formatCurrency, formatCEP, formatCPF } from "../utils/formatters";
-
-// Importando Ícones
 import { Package } from "../components/shared/Icons";
 
-// Componente para exibir os detalhes de um único pedido
 const OrderDetail = ({ order }) => {
   if (!order) {
     return (
@@ -75,7 +69,7 @@ const OrderDetail = ({ order }) => {
           </div>
           <div className="text-right">
             <h3 className="font-semibold text-slate-700">Total do Pedido</h3>
-            <p className="text-xl font-bold text-merqado-orange">
+            <p className="text-xl font-bold text-pink-500">
               {formatCurrency(order.total_price)}
             </p>
           </div>
@@ -89,12 +83,35 @@ export const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const ORDERS_PER_PAGE = 4; // Define quantos pedidos por página
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const query = `
-                    query {
+  const formatDate = (dateString) => {
+    if (
+      typeof dateString !== "string" ||
+      dateString.trim() === "" ||
+      dateString === "0000-00-00 00:00:00"
+    ) {
+      return "Data indisponível";
+    }
+    const date = new Date(Number(dateString));
+
+    if (isNaN(date.getTime())) return "Data Inválida";
+
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const fetchOrders = useCallback(async (page) => {
+    setLoading(true);
+    try {
+      const query = `
+                query GetPaginatedOrders($page: Int, $limit: Int) {
+                    orders(page: $page, limit: $limit) {
                         orders {
                             id
                             total_price
@@ -111,29 +128,30 @@ export const OrdersPage = () => {
                                 }
                             }
                         }
+                        totalPages
                     }
-                `;
-        const data = await graphqlClient(query);
-        setOrders(data.orders);
-        if (data.orders.length > 0) {
-          setSelectedOrder(data.orders[0]); // Seleciona o primeiro pedido por padrão
+                }
+            `;
+      const data = await graphqlClient(query, { page, limit: ORDERS_PER_PAGE });
+      if (data.orders) {
+        setOrders(data.orders.orders);
+        setTotalPages(data.orders.totalPages);
+        if (data.orders.orders.length > 0) {
+          setSelectedOrder(data.orders.orders[0]);
+        } else {
+          setSelectedOrder(null);
         }
-      } catch (error) {
-        console.error("Erro ao buscar pedidos", error);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchOrders();
+    } catch (error) {
+      console.error("Erro ao buscar pedidos", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 flex justify-center">
-        <Spinner />
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage, fetchOrders]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -141,7 +159,11 @@ export const OrdersPage = () => {
         <Package className="w-8 h-8" />
         Meus Pedidos
       </h1>
-      {orders.length === 0 ? (
+      {loading && orders.length === 0 ? (
+        <div className="flex justify-center py-20">
+          <Spinner />
+        </div>
+      ) : orders.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl shadow-md">
           <p className="text-slate-600 text-lg">
             Você ainda não fez nenhum pedido.
@@ -149,7 +171,6 @@ export const OrdersPage = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Coluna da Lista de Pedidos */}
           <div className="md:col-span-1">
             <ul className="space-y-3">
               {orders.map((order) => (
@@ -164,8 +185,7 @@ export const OrdersPage = () => {
                   >
                     <p className="font-semibold">Pedido #{order.id}</p>
                     <p className="text-sm text-slate-500">
-                      Data:{" "}
-                      {new Date(order.created_at).toLocaleDateString("pt-BR")}
+                      Data: {formatDate(order.created_at)}
                     </p>
                     <p className="text-sm font-medium text-slate-700 mt-1">
                       Total: {formatCurrency(order.total_price)}
@@ -174,8 +194,14 @@ export const OrdersPage = () => {
                 </li>
               ))}
             </ul>
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </div>
-          {/* Coluna de Detalhes do Pedido */}
           <div className="md:col-span-2">
             <OrderDetail order={selectedOrder} />
           </div>

@@ -210,22 +210,6 @@ export const Eye = (p) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
-export const Star = (p) => (
-  <svg
-    {...p}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
 export const CreditCard = (p) => (
   <svg
     {...p}
@@ -387,5 +371,161 @@ export const Edit = (p) => (
   >
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+export const Shirt = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
+  </svg>
+);
+export const Footprints = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 16v-2.38c0-.9.6-1.7 1.4-1.9a1.87 1.87 0 0 1 2.2 1.15c.4.82.2 1.8-.5 2.23s-1.8.2-2.2-.53Z"></path>
+    <path d="M10 21v-2.38c0-.9.6-1.7 1.4-1.9a1.87 1.87 0 0 1 2.2 1.15c.4.82.2 1.8-.5 2.23s-1.8.2-2.2-.53Z"></path>
+    <path d="M16 11.14V9.5a4.5 4.5 0 0 0-8.08-2.52"></path>
+    <path d="m17.59 13.4-1.1-2.94a1.87 1.87 0 0 0-3.32-.22"></path>
+  </svg>
+);
+export const Gem = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M6 3h12l4 6-10 13L2 9Z"></path>
+    <path d="M12 22V9"></path>
+    <path d="m3.45 9 8.55-6.32"></path>
+    <path d="m20.55 9-8.55-6.32"></path>
+  </svg>
+);
+export const Sparkles = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m12 3-1.9 5.8-5.8 1.9 5.8 1.9L12 18l1.9-5.8 5.8-1.9-5.8-1.9z"></path>
+  </svg>
+);
+export const Laptop = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path>
+  </svg>
+);
+export const KeyRound = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z" />
+    <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
+  </svg>
+);
+export const Star = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+);
+export const StarHalf = ({ className = "" }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Contorno da estrela */}
+    <path
+      d="M12 2L14.94 8.39L22 9.24L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.24L9.06 8.39L12 2Z"
+      fill="white"
+      stroke="currentColor"
+    />
+    {/* Metade esquerda preenchida */}
+    <clipPath id="half">
+      <rect x="0" y="0" width="12" height="24" />
+    </clipPath>
+    <path
+      d="M12 2L14.94 8.39L22 9.24L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.24L9.06 8.39L12 2Z"
+      fill="currentColor"
+      clipPath="url(#half)"
+    />
+  </svg>
+);
+
+export const StarOutline = (p) => (
+  <svg
+    {...p}
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.905c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.364 1.118l1.518 4.674c.3.921-.755 1.688-1.538 1.118L12 17.77l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118L3.664 10.1c-.783-.57-.38-1.81.588-1.81h4.905a1 1 0 00.95-.69l1.518-4.674z"
+    />
   </svg>
 );

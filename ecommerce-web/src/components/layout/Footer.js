@@ -11,7 +11,7 @@ import { Logo } from "../shared/LogoFooter";
 
 export const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white pt-16 pb-8">
+    <footer className="bg-gray-200 text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Coluna da Marca */}
@@ -27,7 +27,9 @@ export const Footer = () => {
 
           {/* Coluna de Categorias Populares */}
           <div>
-            <h4 className="font-semibold mb-4">Categorias Populares</h4>
+            <h4 className="font-semibold mb-4 text-gray-800">
+              Categorias Populares
+            </h4>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <a href="#" className="hover:text-merqado-orange">
@@ -54,7 +56,7 @@ export const Footer = () => {
 
           {/* Coluna de Links da Empresa */}
           <div>
-            <h4 className="font-semibold mb-4">Nossa Empresa</h4>
+            <h4 className="font-semibold mb-4 text-gray-800">Nossa Empresa</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <a href="#" className="hover:text-merqado-orange">
@@ -81,10 +83,10 @@ export const Footer = () => {
 
           {/* Coluna de Contato */}
           <div>
-            <h4 className="font-semibold mb-4">Contato</h4>
+            <h4 className="font-semibold mb-4 text-gray-800">Contato</h4>
             <address className="not-italic text-gray-400 space-y-2">
-              <p>Rua Exemplo, 123, São Paulo, SP</p>
-              <p>Email: contato@anon.com</p>
+              <p>Rua Exemplo, 123, Araçatuba, SP</p>
+              <p>Email: contato@exemplo.com</p>
               <p>Telefone: (11) 99999-9999</p>
             </address>
           </div>
@@ -92,7 +94,7 @@ export const Footer = () => {
 
         {/* Seção de Copyright */}
         <div className="border-t border-gray-700 pt-8 text-center text-gray-500">
-          <p>&copy; 2025 Anon. Todos os direitos reservados.</p>
+          <p>&copy; 2025 Chris. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

@@ -1,21 +1,53 @@
 const db_gql = require("../config/database");
-const jwt_gql = require("jsonwebtoken");
 
 module.exports = {
   products: async ({ search }) => {
-    let sql = "SELECT * FROM products WHERE stock > 0";
+    let sql = `
+        SELECT 
+            p.*, 
+            c.name as category_name, 
+            c.image_url as category_image_url
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        WHERE p.stock > 0
+    `;
     const params = [];
     if (search) {
-      sql += " AND name LIKE ?";
+      sql += " AND p.name LIKE ?";
       params.push(`%${search}%`);
     }
     const [products] = await db_gql.query(sql, params);
-    return products;
+
+    return products.map((product) => ({
+      ...product,
+      category: product.category_id
+        ? {
+            id: product.category_id,
+            name: product.category_name,
+            image_url: product.category_image_url,
+          }
+        : null,
+    }));
   },
 
   categories: async () => {
     const [categories] = await db_gql.query("SELECT * FROM categories");
-    return categories;
+    const [products] = await db_gql.query(
+      "SELECT * FROM products WHERE stock > 0"
+    );
+
+    const categoryMap = new Map();
+    categories.forEach((cat) => {
+      categoryMap.set(cat.id, { ...cat, products: [] });
+    });
+
+    products.forEach((prod) => {
+      if (prod.category_id && categoryMap.has(prod.category_id)) {
+        categoryMap.get(prod.category_id).products.push(prod);
+      }
+    });
+
+    return Array.from(categoryMap.values());
   },
 
   profile: async (args, context) => {
@@ -74,5 +106,69 @@ module.exports = {
             WHERE f.user_id = ?`;
     const [products] = await db_gql.query(sql, [userId]);
     return products;
+  },
+  getAllUsers: async (args, context) => {
+    // Proteção: Apenas administradores podem executar esta query
+    if (!context.user || context.user.role !== "admin") {
+      throw new Error("Acesso negado. Requer privilégios de administrador.");
+    }
+    const [users] = await db_gql.query(
+      "SELECT id, name, username, role, created_at FROM users"
+    );
+    return users;
+  },
+  orders: async ({ page = 1, limit = 5 }, context) => {
+    if (!context.user) throw new Error("Não autenticado.");
+    const userId = context.user.id;
+    const offset = (page - 1) * limit;
+
+    // Primeiro, conta o número total de pedidos do usuário
+    const countSql =
+      "SELECT COUNT(*) as totalCount FROM orders WHERE user_id = ?";
+    const [countRows] = await db_gql.query(countSql, [userId]);
+    const totalCount = countRows[0].totalCount;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Depois, busca apenas os pedidos da página atual
+    const ordersSql =
+      "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    const [orders] = await db_gql.query(ordersSql, [userId, limit, offset]);
+
+    if (orders.length === 0) {
+      return { orders: [], totalCount: 0, totalPages: 0 };
+    }
+
+    // Busca todos os itens e produtos para os pedidos da página atual
+    const orderIds = orders.map((o) => o.id);
+    const itemsSql = `
+        SELECT oi.*, p.id as product_id, p.name as product_name, p.imageUrl as product_imageUrl
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id IN (?)
+    `;
+    const [items] = await db_gql.query(itemsSql, [orderIds]);
+
+    // Agrupa os itens em seus respectivos pedidos
+    const ordersWithItems = orders.map((order) => ({
+      ...order,
+      shipping_address: JSON.parse(order.shipping_address),
+      items: items
+        .filter((item) => item.order_id === order.id)
+        .map((item) => ({
+          quantity: item.quantity,
+          price_at_purchase: item.price,
+          product: {
+            id: item.product_id,
+            name: item.product_name,
+            imageUrl: item.product_imageUrl,
+          },
+        })),
+    }));
+
+    return {
+      orders: ordersWithItems,
+      totalCount,
+      totalPages,
+    };
   },
 };

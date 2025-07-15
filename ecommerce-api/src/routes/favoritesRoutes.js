@@ -1,8 +1,42 @@
-const express = require("express");
-const router = express.Router();
+const express_fav = require("express");
+const router_fav = express_fav.Router();
 const favoritesController = require("../controllers/favoritesController");
 
-// Este endpoint único adiciona se não existir, ou remove se já existir.
-router.post("/toggle", favoritesController.toggleFavorite);
+/**
+ * @swagger
+ * tags:
+ *   - name: Favorites
+ *     description: Gerenciamento de favoritos do usuário
+ */
 
-module.exports = router;
+/**
+ * @swagger
+ * /api/favorites/toggle:
+ *   post:
+ *     tags: [Favorites]
+ *     summary: Adiciona ou remove um produto dos favoritos
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *             properties:
+ *               productId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Removido dos favoritos
+ *       201:
+ *         description: Adicionado aos favoritos
+ *       401:
+ *         description: Não autorizado
+ */
+router_fav.post("/toggle", favoritesController.toggleFavorite);
+
+module.exports = router_fav;
