@@ -11,6 +11,7 @@ import { useForm } from "../hooks/useForm";
 import { Spinner } from "../components/ui/Spinner";
 import { Input } from "../components/ui/Input";
 import { formatCurrency } from "../utils/formatters";
+import { Pagination } from "../components/ui/Pagination";
 
 // Importando Ícones
 import {
@@ -363,10 +364,14 @@ export const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
-  // Estados dos modais
+  const [pagination, setPagination] = useState({
+    products: { currentPage: 1, totalPages: 1 },
+    categories: { currentPage: 1, totalPages: 1 },
+    users: { currentPage: 1, totalPages: 1 },
+  });
+
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -380,28 +385,74 @@ export const AdminPage = () => {
     setLoading(true);
     try {
       const query = `
-                query GetAdminData {
-                    products { id name description price stock imageUrl category_id }
-                    categories { id name image_url }
-                    getAllUsers { id name username role }
+                query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
+                    products(page: $productsPage, limit: 15) {
+                        products { id name price stock category_id description imageUrl }
+                        totalPages
+                    }
+                    categories(page: $categoriesPage, limit: 15) {
+                        categories { id name image_url }
+                        totalPages
+                    }
+                    users(page: $usersPage, limit: 15) {
+                        users { id name username role }
+                        totalPages
+                    }
                 }
             `;
-      const data = await graphqlClient(query);
-      setProducts(data.products || []);
-      setCategories(data.categories || []);
-      setUsers(data.getAllUsers || []);
+      const variables = {
+        productsPage: pagination.products.currentPage,
+        categoriesPage: pagination.categories.currentPage,
+        usersPage: pagination.users.currentPage,
+      };
+
+      const data = await graphqlClient(query, variables);
+
+      if (data.products) {
+        setProducts(data.products.products || []);
+        setPagination((p) => ({
+          ...p,
+          products: { ...p.products, totalPages: data.products.totalPages },
+        }));
+      }
+      if (data.categories) {
+        setCategories(data.categories.categories || []);
+        setPagination((p) => ({
+          ...p,
+          categories: {
+            ...p.categories,
+            totalPages: data.categories.totalPages,
+          },
+        }));
+      }
+      if (data.users) {
+        setUsers(data.users.users || []);
+        setPagination((p) => ({
+          ...p,
+          users: { ...p.users, totalPages: data.users.totalPages },
+        }));
+      }
     } catch (error) {
-      console.error("Erro ao buscar dados para o painel de admin", error);
+      console.error("Erro ao buscar dados para o painel de admin:", error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [
+    pagination.products.currentPage,
+    pagination.categories.currentPage,
+    pagination.users.currentPage,
+  ]);
 
   useEffect(() => {
     if (userProfile?.role === "admin") {
       fetchData();
     }
   }, [userProfile, fetchData]);
+
+  const handleSaveAndRefetch = async (saveFunction) => {
+    await saveFunction();
+    fetchData();
+  };
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -413,30 +464,22 @@ export const AdminPage = () => {
   };
   const handleDeleteProduct = async (productId) => {
     if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-      try {
+      await handleSaveAndRefetch(async () => {
         await apiClient.delete(`/products/${productId}`);
-        fetchData(); // CORREÇÃO: Chamando fetchData em vez de fetchProducts
-      } catch (error) {
-        console.error("Erro ao excluir produto", error);
-        alert("Falha ao excluir o produto.");
-      }
+      });
     }
   };
   const handleSaveProduct = async (productData) => {
-    try {
+    await handleSaveAndRefetch(async () => {
       if (editingProduct) {
         await apiClient.put(`/products/${editingProduct.id}`, productData);
       } else {
         await apiClient.post("/products", productData);
       }
-      setIsProductModalOpen(false); // CORREÇÃO: Fechando o modal correto
-      fetchData(); // CORREÇÃO: Chamando fetchData em vez de fetchProducts
-    } catch (error) {
-      console.error("Erro ao salvar produto", error);
-      alert("Falha ao salvar o produto.");
-    }
+      setIsProductModalOpen(false);
+    });
   };
-  // --- Lógicas de Categoria (NOVAS) ---
+
   const handleAddCategory = () => {
     setEditingCategory(null);
     setIsCategoryModalOpen(true);
@@ -446,75 +489,38 @@ export const AdminPage = () => {
     setIsCategoryModalOpen(true);
   };
   const handleSaveCategory = async (categoryData) => {
-    try {
+    await handleSaveAndRefetch(async () => {
       if (editingCategory) {
         await apiClient.put(`/categories/${editingCategory.id}`, categoryData);
       } else {
         await apiClient.post("/categories", categoryData);
       }
       setIsCategoryModalOpen(false);
-      fetchData();
-    } catch (error) {
-      console.error("Erro ao salvar categoria", error);
-      alert(
-        `Falha ao salvar a categoria: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    });
   };
   const handleDeleteCategory = async (categoryId) => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir esta categoria? Apenas categorias sem produtos podem ser excluídas."
-      )
-    ) {
-      try {
+    if (window.confirm("Tem certeza que deseja excluir esta categoria?")) {
+      await handleSaveAndRefetch(async () => {
         await apiClient.delete(`/categories/${categoryId}`);
-        fetchData();
-      } catch (error) {
-        console.error("Erro ao excluir categoria", error);
-        alert(
-          `Falha ao excluir a categoria: ${
-            error.response?.data?.message || error.message
-          }`
-        );
-      }
+      });
     }
   };
+
   const handleEditUser = (user) => {
     setEditingUser(user);
     setIsUserModalOpen(true);
   };
   const handleSaveUserRole = async (userId, role) => {
-    try {
+    await handleSaveAndRefetch(async () => {
       await apiClient.put(`/users/${userId}/role`, { role });
       setIsUserModalOpen(false);
-      fetchData();
-    } catch (error) {
-      alert(
-        `Falha ao atualizar papel: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    });
   };
   const handleDeleteUser = async (userId) => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
-      )
-    ) {
-      try {
+    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
+      await handleSaveAndRefetch(async () => {
         await apiClient.delete(`/users/${userId}`);
-        fetchData();
-      } catch (error) {
-        alert(
-          `Falha ao excluir usuário: ${
-            error.response?.data?.message || error.message
-          }`
-        );
-      }
+      });
     }
   };
   const handleResetPassword = (user) => {
@@ -534,7 +540,15 @@ export const AdminPage = () => {
       );
     }
   };
-  if (userProfile?.role !== "admin") {
+
+  if (!userProfile) {
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner />
+      </div>
+    );
+  }
+  if (userProfile.role !== "admin") {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold text-red-600">Acesso Negado</h1>
@@ -545,19 +559,12 @@ export const AdminPage = () => {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-8">
       {isProductModalOpen && (
         <ProductFormModal
           product={editingProduct}
+          categories={categories}
           onClose={() => setIsProductModalOpen(false)}
           onSave={handleSaveProduct}
         />
@@ -583,6 +590,7 @@ export const AdminPage = () => {
           onSave={handleSaveNewPassword}
         />
       )}
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-merqado-gray-dark flex items-center gap-3">
           <Shield className="w-8 h-8" />
@@ -603,7 +611,6 @@ export const AdminPage = () => {
         )}
       </div>
 
-      {/* Abas de Navegação */}
       <div className="mb-4 border-b border-gray-200">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
@@ -645,7 +652,6 @@ export const AdminPage = () => {
         </div>
       ) : (
         <>
-          {/* Tabela de Produtos */}
           <div className={activeTab === "products" ? "" : "hidden"}>
             <div className="bg-white rounded-xl shadow-md overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">
@@ -701,8 +707,20 @@ export const AdminPage = () => {
                 </tbody>
               </table>
             </div>
+            {pagination.products.totalPages > 1 && (
+              <Pagination
+                currentPage={pagination.products.currentPage}
+                totalPages={pagination.products.totalPages}
+                onPageChange={(page) =>
+                  setPagination((p) => ({
+                    ...p,
+                    products: { ...p.products, currentPage: page },
+                  }))
+                }
+              />
+            )}
           </div>
-          {/* Tabela de Categorias */}
+
           <div className={activeTab === "categories" ? "" : "hidden"}>
             <div className="bg-white rounded-xl shadow-md overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">
@@ -748,8 +766,20 @@ export const AdminPage = () => {
                 </tbody>
               </table>
             </div>
+            {pagination.categories.totalPages > 1 && (
+              <Pagination
+                currentPage={pagination.categories.currentPage}
+                totalPages={pagination.categories.totalPages}
+                onPageChange={(page) =>
+                  setPagination((p) => ({
+                    ...p,
+                    categories: { ...p.categories, currentPage: page },
+                  }))
+                }
+              />
+            )}
           </div>
-          {/* Tabela de Usuários */}
+
           <div className={activeTab === "users" ? "" : "hidden"}>
             <div className="bg-white rounded-xl shadow-md overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">
@@ -822,6 +852,18 @@ export const AdminPage = () => {
                 </tbody>
               </table>
             </div>
+            {pagination.users.totalPages > 1 && (
+              <Pagination
+                currentPage={pagination.users.currentPage}
+                totalPages={pagination.users.totalPages}
+                onPageChange={(page) =>
+                  setPagination((p) => ({
+                    ...p,
+                    users: { ...p.users, currentPage: page },
+                  }))
+                }
+              />
+            )}
           </div>
         </>
       )}

@@ -21,6 +21,7 @@ import { AdminPage } from "./pages/AdminPage";
 import { SearchPage } from "./pages/SearchPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { FavoritesPage } from "./pages/FavoritesPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
 
 // Importando Componentes de Layout e UI
 import { Header } from "./components/layout/Header";
@@ -86,6 +87,7 @@ const Dashboard = () => {
   const [currentSearchTerm, setCurrentSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   const handleSearch = async (term) => {
     if (!term) return;
@@ -103,6 +105,10 @@ const Dashboard = () => {
       setIsSearching(false);
       setSearchTerm("");
     }
+  };
+  const handleSelectProduct = (productId) => {
+    setSelectedProductId(productId);
+    setPage("productDetail");
   };
 
   const renderPage = () => {
@@ -133,8 +139,12 @@ const Dashboard = () => {
         return <CategoriesPage />;
       case "favorites":
         return <FavoritesPage />;
+      case "productDetail":
+        return (
+          <ProductDetailPage productId={selectedProductId} setPage={setPage} />
+        );
       default:
-        return <HomePage setPage={setPage} />;
+        return <HomePage onProductSelect={handleSelectProduct} />;
     }
   };
 

@@ -1,39 +1,47 @@
 const db_gql = require("../config/database");
+const jwt_gql = require("jsonwebtoken");
 
 module.exports = {
-  products: async ({ search }) => {
+  products: async ({ search, page = 1, limit = 15 }) => {
+    const offset = (page - 1) * limit;
+    let countSql =
+      "SELECT COUNT(*) as totalCount FROM products WHERE stock > 0";
     let sql = `
-        SELECT 
-            p.*, 
-            c.name as category_name, 
-            c.image_url as category_image_url
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        WHERE p.stock > 0
-    `;
+        SELECT p.*, c.name as category_name 
+        FROM products p 
+        LEFT JOIN categories c ON p.category_id = c.id 
+        WHERE p.stock > 0`;
     const params = [];
-    if (search) {
-      sql += " AND p.name LIKE ?";
-      params.push(`%${search}%`);
-    }
-    const [products] = await db_gql.query(sql, params);
+    const countParams = [];
 
-    return products.map((product) => ({
-      ...product,
-      category: product.category_id
-        ? {
-            id: product.category_id,
-            name: product.category_name,
-            image_url: product.category_image_url,
-          }
-        : null,
-    }));
+    if (search) {
+      const searchClause = " AND name LIKE ?";
+      sql += searchClause;
+      countSql += searchClause;
+      params.push(`%${search}%`);
+      countParams.push(`%${search}%`);
+    }
+
+    sql += " ORDER BY p.id DESC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
+    const [countRows] = await db_gql.query(countSql, countParams);
+    const totalPages = Math.ceil(countRows[0].totalCount / limit);
+
+    const [products] = await db_gql.query(sql, params);
+    return {
+      products: products.map((p) => ({
+        ...p,
+        category: { name: p.category_name },
+      })),
+      totalPages,
+    };
   },
 
   categories: async () => {
     const [categories] = await db_gql.query("SELECT * FROM categories");
     const [products] = await db_gql.query(
-      "SELECT * FROM products WHERE stock > 0"
+      "SELECT id, name, category_id FROM products WHERE stock > 0"
     );
 
     const categoryMap = new Map();
@@ -47,7 +55,26 @@ module.exports = {
       }
     });
 
-    return Array.from(categoryMap.values());
+    return {
+      categories: Array.from(categoryMap.values()),
+      totalPages: 1, // ou calcule corretamente se necessário
+    };
+  },
+
+  users: async ({ page = 1, limit = 15 }, context) => {
+    if (!context.user || context.user.role !== "admin") {
+      throw new Error("Acesso negado. Requer privilégios de administrador.");
+    }
+    const offset = (page - 1) * limit;
+    const [countRows] = await db_gql.query(
+      "SELECT COUNT(*) as totalCount FROM users"
+    );
+    const totalPages = Math.ceil(countRows[0].totalCount / limit);
+    const [users] = await db_gql.query(
+      "SELECT id, name, username, role, created_at FROM users LIMIT ? OFFSET ?",
+      [limit, offset]
+    );
+    return { users, totalPages };
   },
 
   profile: async (args, context) => {
@@ -106,16 +133,6 @@ module.exports = {
             WHERE f.user_id = ?`;
     const [products] = await db_gql.query(sql, [userId]);
     return products;
-  },
-  getAllUsers: async (args, context) => {
-    // Proteção: Apenas administradores podem executar esta query
-    if (!context.user || context.user.role !== "admin") {
-      throw new Error("Acesso negado. Requer privilégios de administrador.");
-    }
-    const [users] = await db_gql.query(
-      "SELECT id, name, username, role, created_at FROM users"
-    );
-    return users;
   },
   orders: async ({ page = 1, limit = 5 }, context) => {
     if (!context.user) throw new Error("Não autenticado.");

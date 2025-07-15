@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /*
 ================================================================================
-ARQUIVO: src/components/home/CategorySidebar.js (ATUALIZADO)
+ARQUIVO: src/components/home/CategorySidebar.js (CORRIGIDO E FUNCIONAL)
 ================================================================================
 */
 import React, { useState, useEffect } from "react";
@@ -86,7 +86,8 @@ export const CategorySidebar = () => {
       setLoading(true);
       try {
         const query = `
-          query GetCategoriesWithProducts {
+        query GetCategoriesWithProducts {
+          categories(limit: 8) {
             categories {
               id
               name
@@ -96,13 +97,15 @@ export const CategorySidebar = () => {
               }
             }
           }
-        `;
-        const data = await graphqlClient(query);
-        if (data.categories) {
-          setCategories(data.categories.slice(0, 7));
         }
+      `;
+        const data = await graphqlClient(query);
+
+        const receivedCategories = data?.categories?.categories ?? [];
+        setCategories(receivedCategories);
       } catch (error) {
         console.error("Erro ao buscar categorias para a sidebar:", error);
+        setCategories([]); // fallback de segurança
       } finally {
         setLoading(false);
       }
@@ -118,7 +121,7 @@ export const CategorySidebar = () => {
   return (
     <aside className="w-full md:w-1/4 bg-white/60 backdrop-blur-md border border-white/30 rounded-xl shadow-lg h-fit">
       <h2 className="text-xl font-bold text-merqado-gray-dark p-4 border-b border-gray-200/80">
-        Categorias Populares
+        Categorias
       </h2>
       {loading ? (
         <div className="flex justify-center p-6">
@@ -126,34 +129,35 @@ export const CategorySidebar = () => {
         </div>
       ) : (
         <div>
-          {categories.map((category) => (
-            <AccordionItem
-              key={category.id}
-              title={category.name}
-              icon={<CategoryIcon categoryName={category.name} />}
-              isOpen={openCategory === category.id}
-              onToggle={() => handleToggle(category.id)}
-            >
-              {category.products && category.products.length > 0 ? (
-                <ul className="space-y-1 py-2">
-                  {category.products.map((product) => (
-                    <li key={product.id}>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 rounded-md text-merqado-gray-dark/90 hover:bg-merqado-blue-light hover:text-merqado-blue font-medium transition-colors duration-150"
-                      >
-                        {product.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="px-4 py-2 text-sm text-merqado-gray-medium">
-                  Nenhum produto.
-                </p>
-              )}
-            </AccordionItem>
-          ))}
+          {Array.isArray(categories) &&
+            categories.map((category) => (
+              <AccordionItem
+                key={category.id}
+                title={category.name}
+                icon={<CategoryIcon categoryName={category.name} />}
+                isOpen={openCategory === category.id}
+                onToggle={() => handleToggle(category.id)}
+              >
+                {category.products && category.products.length > 0 ? (
+                  <ul className="space-y-1 py-2">
+                    {category.products.map((product) => (
+                      <li key={product.id}>
+                        <a
+                          href="#"
+                          className="block px-4 py-2 rounded-md text-merqado-gray-dark/90 hover:bg-merqado-blue-light hover:text-merqado-blue font-medium transition-colors duration-150"
+                        >
+                          {product.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="px-4 py-2 text-sm text-merqado-gray-medium">
+                    Nenhum produto nesta categoria.
+                  </p>
+                )}
+              </AccordionItem>
+            ))}
         </div>
       )}
     </aside>

@@ -1,4 +1,9 @@
 /* eslint-disable no-unused-vars */
+/*
+================================================================================
+ARQUIVO: src/pages/HomePage.js (CORRIGIDO)
+================================================================================
+*/
 import React, { useState, useEffect, useMemo } from "react";
 import { graphqlClient } from "../api/client";
 import { Spinner } from "../components/ui/Spinner";
@@ -9,35 +14,44 @@ import { ProductColumn } from "../components/home/ProductColumn";
 import { ProductCardV2 } from "../components/products/ProductCardV2";
 import { Pagination } from "../components/ui/Pagination";
 
-export const HomePage = () => {
+export const HomePage = ({ onProductSelect }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const PRODUCTS_PER_PAGE = 12;
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
+        // CORREÇÃO: A query agora acessa a lista 'products' dentro do tipo paginado
         const query = `
-                    query GetAllProductsForHome {
-                        products {
-                            id
-                            name
-                            description
-                            price
-                            imageUrl
-                            is_new
-                            is_trending
-                            category {
+                    query GetHomepageProducts($page: Int, $limit: Int) {
+                        products(page: $page, limit: $limit) {
+                            products {
+                                id
                                 name
+                                description
+                                price
+                                imageUrl
+                                is_new
+                                is_trending
+                                category {
+                                    name
+                                }
                             }
+                            totalPages
                         }
                     }
                 `;
-        const data = await graphqlClient(query);
+        const data = await graphqlClient(query, {
+          page: currentPage,
+          limit: PRODUCTS_PER_PAGE,
+        });
         if (data.products) {
-          setAllProducts(data.products);
+          setAllProducts(data.products.products || []);
+          setTotalPages(data.products.totalPages || 1);
         }
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
@@ -46,19 +60,9 @@ export const HomePage = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [currentPage]);
 
-  const { currentProducts, totalPages } = useMemo(() => {
-    const indexOfLastProduct = currentPage * PRODUCTS_PER_PAGE;
-    const indexOfFirstProduct = indexOfLastProduct - PRODUCTS_PER_PAGE;
-    const currentProducts = allProducts.slice(
-      indexOfFirstProduct,
-      indexOfLastProduct
-    );
-    const totalPages = Math.ceil(allProducts.length / PRODUCTS_PER_PAGE);
-    return { currentProducts, totalPages };
-  }, [currentPage, allProducts]);
-
+  // A lógica de filtragem permanece a mesma
   const newArrivals = allProducts.filter((p) => p.is_new).slice(0, 3);
   const trending = allProducts.filter((p) => p.is_trending).slice(0, 3);
   const topRated = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -95,8 +99,12 @@ export const HomePage = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {currentProducts.map((p) => (
-                  <ProductCardV2 key={p.id} product={p} />
+                {allProducts.map((p) => (
+                  <ProductCardV2
+                    key={p.id}
+                    product={p}
+                    onProductSelect={onProductSelect}
+                  />
                 ))}
               </div>
               {totalPages > 1 && (
