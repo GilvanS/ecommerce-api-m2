@@ -22,7 +22,7 @@ module.exports = {
       countParams.push(`%${search}%`);
     }
 
-    sql += " ORDER BY p.id DESC LIMIT ? OFFSET ?";
+    sql += " ORDER BY p.id ASC LIMIT ? OFFSET ?";
     params.push(limit, offset);
 
     const [countRows] = await db_gql.query(countSql, countParams);
@@ -37,7 +37,22 @@ module.exports = {
       totalPages,
     };
   },
+  product: async ({ id }) => {
+    const sql = `
+    SELECT p.*, c.name as category_name
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    WHERE p.id = ?
+  `;
+    const [rows] = await db_gql.query(sql, [id]);
+    if (rows.length === 0) return null;
 
+    const p = rows[0];
+    return {
+      ...p,
+      category: { name: p.category_name },
+    };
+  },
   categories: async () => {
     const [categories] = await db_gql.query("SELECT * FROM categories");
     const [products] = await db_gql.query(
@@ -60,7 +75,6 @@ module.exports = {
       totalPages: 1, // ou calcule corretamente se necessário
     };
   },
-
   users: async ({ page = 1, limit = 15 }, context) => {
     if (!context.user || context.user.role !== "admin") {
       throw new Error("Acesso negado. Requer privilégios de administrador.");
@@ -76,7 +90,6 @@ module.exports = {
     );
     return { users, totalPages };
   },
-
   profile: async (args, context) => {
     if (!context.user) throw new Error("Não autenticado.");
     const [users] = await db_gql.query(
@@ -86,7 +99,6 @@ module.exports = {
     if (users.length === 0) throw new Error("Usuário não encontrado.");
     return users[0];
   },
-
   orders: async (args, context) => {
     if (!context.user) throw new Error("Não autenticado.");
     const userId = context.user.id;

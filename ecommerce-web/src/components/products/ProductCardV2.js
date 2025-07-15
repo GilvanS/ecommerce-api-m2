@@ -18,7 +18,7 @@ export const ProductCardV2 = ({ product, onProductSelect }) => {
   const favorited = isFavorite(product.id);
 
   const handleCardClick = (e) => {
-    // Evita que o clique em um botão dispare a navegação
+    // Evita que o clique em um botão interno dispare a navegação
     if (e.target.closest("button")) return;
     onProductSelect(product.id);
   };

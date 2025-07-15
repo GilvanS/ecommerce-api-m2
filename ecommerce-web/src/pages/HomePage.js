@@ -8,7 +8,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { graphqlClient } from "../api/client";
 import { Spinner } from "../components/ui/Spinner";
 import { HeroSlider } from "../components/home/HeroSlider";
-import { CategoryCarousel } from "../components/home/CategoryCarousel";
 import { CategorySidebar } from "../components/home/CategorySidebar";
 import { ProductColumn } from "../components/home/ProductColumn";
 import { ProductCardV2 } from "../components/products/ProductCardV2";
@@ -16,6 +15,12 @@ import { Pagination } from "../components/ui/Pagination";
 
 export const HomePage = ({ onProductSelect }) => {
   const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState({
+    newArrivals: [],
+    trending: [],
+    topRated: [],
+    all: [],
+  });
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

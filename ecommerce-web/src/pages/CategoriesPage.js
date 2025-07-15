@@ -20,15 +20,17 @@ export const CategoriesPage = () => {
         const query = `
           query {
             categories {
-              id
-              name
-              image_url
+              categories {
+                id
+                name
+                image_url
+              }
             }
           }
         `;
         const data = await graphqlClient(query);
-        if (data.categories) {
-          setAllCategories(data.categories);
+        if (data.categories?.categories) {
+          setAllCategories(data.categories.categories);
         }
       } catch (error) {
         console.error("Erro ao buscar categorias", error);

@@ -1,5 +1,5 @@
-const express_product = require("express");
-const router_product = express_product.Router();
+const express = require("express");
+const router = express.Router();
 const productController = require("../controllers/productController");
 const {
   authMiddleware,
@@ -12,7 +12,7 @@ const {
  *   - name: Products
  *     description: Operações de gerenciamento de produtos (requerem privilégios de admin)
  */
-
+router.get("/", productController.getProducts);
 /**
  * @swagger
  * /api/products:
@@ -47,7 +47,7 @@ const {
  *         description: Acesso negado (não é admin)
  */
 
-router_product.post(
+router.post(
   "/",
   authMiddleware,
   adminMiddleware,
@@ -93,7 +93,7 @@ router_product.post(
  *       403:
  *         description: Acesso negado (não é admin)
  */
-router_product.put(
+router.put(
   "/:id",
   authMiddleware,
   adminMiddleware,
@@ -120,11 +120,11 @@ router_product.put(
  *       403:
  *         description: Acesso negado (não é admin)
  */
-router_product.delete(
+router.delete(
   "/:id",
   authMiddleware,
   adminMiddleware,
   productController.deleteProduct
 );
 
-module.exports = router_product;
+module.exports = router;

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 
 // Importando Provedores de Contexto
@@ -114,7 +115,18 @@ const Dashboard = () => {
   const renderPage = () => {
     switch (page) {
       case "home":
-        return <HomePage setPage={setPage} />;
+        return <HomePage onProductSelect={handleSelectProduct} />;
+      case "search":
+        return (
+          <SearchPage
+            searchTerm={searchTerm}
+            onProductSelect={handleSelectProduct}
+          />
+        );
+      case "categories":
+        return <CategoriesPage onProductSelect={handleSelectProduct} />;
+      case "favorites":
+        return <FavoritesPage onProductSelect={handleSelectProduct} />;
       case "cart":
         return <CartPage setPage={setPage} />;
       case "orders":
@@ -127,18 +139,7 @@ const Dashboard = () => {
         return <SuccessPage setPage={setPage} />;
       case "admin":
         return <AdminPage />;
-      case "search":
-        return (
-          <SearchPage
-            searchTerm={currentSearchTerm}
-            results={searchResults}
-            loading={isSearching}
-          />
-        );
-      case "categories":
-        return <CategoriesPage />;
-      case "favorites":
-        return <FavoritesPage />;
+      // NOVO: Rota para a página de detalhes
       case "productDetail":
         return (
           <ProductDetailPage productId={selectedProductId} setPage={setPage} />

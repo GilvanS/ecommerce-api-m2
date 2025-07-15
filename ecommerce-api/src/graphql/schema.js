@@ -27,6 +27,7 @@ module.exports = buildSchema(`
     }
 
     type Query {
+        product(id: ID!): Product
         products(search: String, page: Int, limit: Int): PaginatedProducts
         categories(page: Int, limit: Int): PaginatedCategories
         users(page: Int, limit: Int): PaginatedUsers
