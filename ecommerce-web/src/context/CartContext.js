@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, createContext, useContext, useMemo } from "react";
+/*
+================================================================================
+ARQUIVO: src/context/CartContext.js (ATUALIZADO)
+================================================================================
+*/
+import React, { useState, useMemo, createContext, useContext } from "react";
 
 const CartContext = createContext(null);
 
@@ -14,17 +19,20 @@ export const CartProvider = ({ children }) => {
     [cart]
   );
 
-  const addToCart = (product) => {
+  // ATUALIZADO: A função agora aceita uma quantidade específica a ser adicionada
+  const addToCart = (product, quantityToAdd = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
+        // Se o item já existe, soma a nova quantidade à existente
         return prevCart.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      // Se for um item novo, adiciona com a quantidade especificada
+      return [...prevCart, { ...product, quantity: quantityToAdd }];
     });
   };
 

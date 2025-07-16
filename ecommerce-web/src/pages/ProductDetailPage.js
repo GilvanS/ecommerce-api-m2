@@ -1,8 +1,3 @@
-/*
-================================================================================
-ARQUIVO: src/pages/ProductDetailPage.js (NOVO)
-================================================================================
-*/
 import React, { useState, useEffect } from "react";
 import { graphqlClient } from "../api/client";
 import { useCart } from "../context/CartContext";
@@ -111,8 +106,8 @@ export const ProductDetailPage = ({ productId, setPage }) => {
   const favorited = isFavorite(product.id);
 
   const handleAddToCart = () => {
-    addToCart({ ...product, quantity });
-    alert(`${quantity}x ${product.name} adicionado ao carrinho!`);
+    addToCart(product, quantity);
+    alert(`${quantity}x ${product.name} adicionado(s) ao carrinho!`);
   };
 
   return (
