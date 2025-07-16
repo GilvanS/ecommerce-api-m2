@@ -1,38 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/*
-================================================================================
-ARQUIVO: src/context/CartContext.js (ATUALIZADO)
-================================================================================
-*/
+
 import React, { useState, useMemo, createContext, useContext } from "react";
+import toast from "react-hot-toast"; // NOVO: Importando a biblioteca de toast
+import { CheckCircle, Trash2 } from "../components/shared/Icons";
 
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+
   const total = useMemo(
     () =>
-      cart.reduce(
-        (sum, item) => sum + parseFloat(item.price) * item.quantity,
-        0
-      ),
+      cart.reduce((sum, item) => {
+        const priceToUse = item.discount_price || item.price;
+        return sum + parseFloat(priceToUse) * item.quantity;
+      }, 0),
     [cart]
   );
 
-  // ATUALIZADO: A função agora aceita uma quantidade específica a ser adicionada
   const addToCart = (product, quantityToAdd = 1) => {
+    // Lógica para adicionar ao carrinho...
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
-        // Se o item já existe, soma a nova quantidade à existente
         return prevCart.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
       }
-      // Se for um item novo, adiciona com a quantidade especificada
-      return [...prevCart, { ...product, quantity: quantityToAdd }];
+      return [
+        ...prevCart,
+        {
+          ...product,
+          price: product.price,
+          discount_price: product.discount_price,
+          quantity: quantityToAdd,
+        },
+      ];
+    });
+
+    // NOVO: Dispara o toast de sucesso
+    toast.success(`${quantityToAdd}x ${product.name} adicionado(s)!`, {
+      icon: <CheckCircle className="text-merqado-blue-dark" />,
     });
   };
 
@@ -45,8 +55,16 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  const removeItem = (productId) =>
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  const removeItem = (productId) => {
+    const removedItem = cart.find((item) => item.id === productId);
+    if (removedItem) {
+      setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+      // Opcional: toast para item removido
+      toast.error(`${removedItem.name} removido do carrinho.`, {
+        icon: <Trash2 className="text-merqado-orange-dark" />,
+      });
+    }
+  };
 
   const clearCart = () => setCart([]);
 
@@ -59,7 +77,7 @@ export const CartProvider = ({ children }) => {
       removeItem,
       clearCart,
     }),
-    [cart, total, updateItemQuantity]
+    [cart, removeItem, total, updateItemQuantity]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

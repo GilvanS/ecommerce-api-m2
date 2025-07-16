@@ -34,6 +34,7 @@ export const ProductDetailPage = ({ productId, setPage }) => {
                             name
                             description
                             price
+                            discount_price
                             stock
                             imageUrl
                             category {
@@ -106,7 +107,8 @@ export const ProductDetailPage = ({ productId, setPage }) => {
       ),
     },
   ];
-
+  const hasDiscount =
+    product.discount_price && product.discount_price < product.price;
   return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
@@ -136,9 +138,22 @@ export const ProductDetailPage = ({ productId, setPage }) => {
                 </span>
               </div>
 
-              <p className="text-4xl font-bold text-merqado-blue">
-                {formatCurrency(product.price)}
-              </p>
+              <div>
+                {hasDiscount ? (
+                  <div className="flex items-center gap-4">
+                    <p className="text-2xl text-merqado-gray-medium line-through">
+                      {formatCurrency(product.price)}
+                    </p>
+                    <p className="text-4xl font-bold text-merqado-orange">
+                      {formatCurrency(product.discount_price)}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-4xl font-bold text-merqado-blue">
+                    {formatCurrency(product.price)}
+                  </p>
+                )}
+              </div>
 
               <p className="text-merqado-gray-dark/90 pb-4 border-b border-gray-200">
                 {product.description.substring(0, 150)}...

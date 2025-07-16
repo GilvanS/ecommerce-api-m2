@@ -1,0 +1,61 @@
+[
+  {
+    "id": "module-1",
+    "title": "Fundamentos de Teste",
+    "icon": "BookOpen",
+    "topics": [
+      {
+        "id": "topic-1-1",
+        "title": "O que é Teste de Software?",
+        "file": "fundamentals/1-what-is-testing.md"
+      },
+      {
+        "id": "topic-1-2",
+        "title": "Por que Testar?",
+        "file": "fundamentals/2-why-test.md"
+      }
+    ]
+  },
+  {
+    "id": "module-2",
+    "title": "Técnicas de Teste",
+    "icon": "ClipboardList",
+    "topics": [
+      {
+        "id": "topic-2-1",
+        "title": "Partição de Equivalência",
+        "file": "techniques/1-equivalence-partitioning.md"
+      },
+      {
+        "id": "topic-2-2",
+        "title": "Análise de Valor Limite",
+        "file": "techniques/2-boundary-value-analysis.md"
+      }
+    ]
+  },
+  {
+    "id": "module-3",
+    "title": "Desafios Práticos",
+    "icon": "Target",
+    "topics": [
+      {
+        "id": "challenge-3-1",
+        "title": "Validar o Login com Dados Inválidos",
+        "file": "challenges/1-invalid-login.md",
+        "action": {
+          "label": "Testar Agora",
+          "page": "login"
+        }
+      },
+      {
+        "id": "challenge-3-2",
+        "title": "Testar o Fluxo de Compra",
+        "file": "challenges/2-purchase-flow.md",
+        "action": {
+          "label": "Ir para a Loja",
+          "page": "home"
+        }
+      }
+    ]
+  }
+]

@@ -1,5 +1,5 @@
 {
-  "name": "ecommerce-api-v3",
+  "name": "ecommerce-api",
   "version": "3.0.0",
   "description": "API REST e GraphQL para e-commerce com perfis, pedidos e admin.",
   "main": "src/server.js",

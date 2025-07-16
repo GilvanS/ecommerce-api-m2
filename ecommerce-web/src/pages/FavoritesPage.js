@@ -1,22 +1,17 @@
+/* eslint-disable no-unused-vars */
 /*
 ================================================================================
-ARQUIVO: src/pages/FavoritesPage.js (CORRIGIDO)
+ARQUIVO: src/pages/FavoritesPage.js (ATUALIZADO)
 ================================================================================
 */
-import React from "react";
-
-// Importando o contexto para acessar os favoritos
+import React, { useState, useEffect } from "react";
 import { useFavorites } from "../context/FavoritesContext";
-
-// Importando componentes de UI e o card de produto
 import { Spinner } from "../components/ui/Spinner";
 import { ProductCardV2 } from "../components/products/ProductCardV2";
-
-// Importando Ícones
 import { Heart } from "../components/shared/Icons";
 
-export const FavoritesPage = () => {
-  // Consome diretamente a lista de produtos favoritados e o estado de loading
+// A página agora recebe a prop onProductSelect
+export const FavoritesPage = ({ onProductSelect }) => {
   const { favoriteProducts, loading } = useFavorites();
 
   if (loading) {
@@ -34,17 +29,18 @@ export const FavoritesPage = () => {
         Meus Favoritos
       </h1>
       {favoriteProducts.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl shadow-md">
-          <p className="text-slate-600 text-lg">
-            Você ainda não adicionou nenhum produto aos favoritos.
-          </p>
-        </div>
+        <p className="text-slate-600 text-center text-lg mt-10">
+          Você ainda não adicionou nenhum produto aos favoritos.
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {favoriteProducts.map((product) => (
-            // O ProductCardV2 já tem a lógica para exibir o coração preenchido
-            // e a ação de remover ao clicar.
-            <ProductCardV2 key={product.id} product={product} />
+          {/* A prop onProductSelect é passada para cada card */}
+          {favoriteProducts.map((p) => (
+            <ProductCardV2
+              key={p.id}
+              product={p}
+              onProductSelect={onProductSelect}
+            />
           ))}
         </div>
       )}

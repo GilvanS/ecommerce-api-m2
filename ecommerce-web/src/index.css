@@ -2,23 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-merqado-gray-light;
-  background-image: radial-gradient(
-      circle at top right,
-      rgba(0, 51, 160, 0.1),
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at bottom left,
-      rgba(242, 140, 40, 0.1),
-      transparent 50%
-    );
-  background-attachment: fixed;
+/* Animação fluida horizontal do degradê */
+@keyframes pan-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* Esconde o botão 'X' padrão do navegador em campos de busca */
-input[type="search"]::-webkit-search-cancel-button {
-  -webkit-appearance: none;
-  appearance: none;
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  /* Cor base fallback */
+  background: #ffffff;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgb(244, 254, 255) 50%,
+    rgba(255, 248, 232, 1) 100%
+  );
+
+  /* Suavidade da transição */
+  background-size: 300% 300%;
+  animation: pan-gradient 30s ease infinite;
+
+  /* Texto escuro para contraste */
+  color: #333333;
 }

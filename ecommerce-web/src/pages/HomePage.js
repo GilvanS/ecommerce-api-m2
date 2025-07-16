@@ -13,7 +13,7 @@ import { ProductColumn } from "../components/home/ProductColumn";
 import { ProductCardV2 } from "../components/products/ProductCardV2";
 import { Pagination } from "../components/ui/Pagination";
 
-export const HomePage = ({ onProductSelect }) => {
+export const HomePage = ({ onProductSelect, onCategorySelect, setPage }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState({
     newArrivals: [],
@@ -39,6 +39,7 @@ export const HomePage = ({ onProductSelect }) => {
                                 name
                                 description
                                 price
+                                discount_price
                                 category_id
                                 imageUrl
                                 is_new
@@ -75,7 +76,7 @@ export const HomePage = ({ onProductSelect }) => {
 
   return (
     <>
-      <HeroSlider />
+      <HeroSlider setPage={setPage} />
       <div className="container mx-auto px-4 my-12">
         <div className="flex flex-col md:flex-row gap-8">
           <CategorySidebar onProductSelect={onProductSelect} />
@@ -90,16 +91,19 @@ export const HomePage = ({ onProductSelect }) => {
                   title="Novidades"
                   products={newArrivals}
                   onProductSelect={onProductSelect}
+                  setPage={setPage}
                 />
                 <ProductColumn
                   title="Tendências"
                   products={trending}
                   onProductSelect={onProductSelect}
+                  setPage={setPage}
                 />
                 <ProductColumn
                   title="Mais Avaliados"
                   products={topRated}
                   onProductSelect={onProductSelect}
+                  setPage={setPage}
                 />
               </div>
             )}

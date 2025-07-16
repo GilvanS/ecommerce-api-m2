@@ -125,6 +125,7 @@ export const OrdersPage = () => {
                                     id
                                     name
                                     imageUrl
+                                    discount_price
                                 }
                             }
                         }

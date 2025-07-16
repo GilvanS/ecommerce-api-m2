@@ -39,7 +39,7 @@ const banners = [
   },
 ];
 
-export const HeroSlider = () => {
+export const HeroSlider = ({ setPage }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Efeito para alternar os banners automaticamente
@@ -89,6 +89,7 @@ export const HeroSlider = () => {
             <h2 className="text-5xl font-bold my-4">{currentBanner.title}</h2>
             <p className="mb-6">{currentBanner.subtitle}</p>
             <button
+              onClick={() => setPage("offers")}
               className={`${currentBanner.buttonColor} text-white font-bold py-3 px-8 rounded-md hover:bg-opacity-90 transition-opacity`}
             >
               {currentBanner.buttonText}

@@ -1,20 +1,24 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /*
 ================================================================================
-ARQUIVO: src/components/layout/Header.js (CORRIGIDO)
+ARQUIVO: src/components/layout/Header.js (ATUALIZADO)
 ================================================================================
 */
-import React, { useState, useEffect, useMemo } from "react";
-
-// Importando contextos para dados globais
+import React, { useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
-import { useFavorites } from "../../context/FavoritesContext"; // Importado
-
-// Importando componentes e ícones
+import { useFavorites } from "../../context/FavoritesContext";
 import { Logo } from "../shared/Logo2";
-import { User, Heart, ShoppingBag, Search, Shield, X } from "../shared/Icons";
+import {
+  User,
+  Heart,
+  ShoppingBag,
+  Search,
+  Shield,
+  X,
+  Flame,
+  LogOut,
+} from "../shared/Icons";
 
 export const Header = ({
   setPage,
@@ -23,22 +27,12 @@ export const Header = ({
   setSearchTerm,
 }) => {
   const { cart } = useCart();
-  const { favoritesCount } = useFavorites(); // Consumindo o contexto de favoritos
+  const { favoritesCount } = useFavorites();
   const { isAuthenticated, userProfile, logout } = useAuth();
-
   const cartItemCount = useMemo(
     () => cart.reduce((acc, item) => acc + item.quantity, 0),
     [cart]
   );
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const onSearchSubmit = (e) => {
     e.preventDefault();
@@ -53,10 +47,9 @@ export const Header = ({
   };
 
   return (
-    <header className="sticky top-0 bg-white z-20">
+    <header className="sticky top-0 bg-white z-20 shadow-md">
       <div className="bg-merqado-gray-light border-b border-gray-200 py-2 text-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div>{/* Espaço para links de redes sociais, etc. */}</div>
+        <div className="container mx-auto px-4 flex justify-end items-center">
           <div className="flex items-center space-x-4 text-merqado-gray-dark">
             {isAuthenticated ? (
               <>
@@ -69,29 +62,29 @@ export const Header = ({
                     Admin
                   </button>
                 )}
-                <button onClick={logout} className="hover:text-merqado-blue">
-                  Sair
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-1 hover:text-merqado-blue"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sair</span>
                 </button>
               </>
             ) : (
               <a
                 href="#"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage("login");
+                }}
                 className="hover:text-merqado-blue"
               >
                 Login / Registro
               </a>
             )}
-            <button
-              onClick={() => setPage("favorites")}
-              className="hover:text-merqado-blue"
-            >
-              Favoritos
-            </button>
           </div>
         </div>
       </div>
-
       <div className="bg-white py-4">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="cursor-pointer" onClick={() => setPage("home")}>
@@ -120,7 +113,7 @@ export const Header = ({
               )}
               <button
                 type="submit"
-                className="absolute right-0 top-0 h-full px-4 text-gray-600 hover:text-merqado-blue"
+                className="h-full px-4 text-gray-600 hover:text-merqado-blue"
               >
                 <Search />
               </button>
@@ -154,9 +147,8 @@ export const Header = ({
           </div>
         </div>
       </div>
-
       <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-4 flex justify-center">
+        <div className="container mx-auto px-4">
           <ul className="flex space-x-8 font-medium">
             <li>
               <a
@@ -165,7 +157,7 @@ export const Header = ({
                   e.preventDefault();
                   setPage("home");
                 }}
-                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
+                className="block py-4 text-gray-800 hover:text-merqado-blue border-b-2 border-transparent hover:border-merqado-blue"
               >
                 Início
               </a>
@@ -177,7 +169,7 @@ export const Header = ({
                   e.preventDefault();
                   setPage("categories");
                 }}
-                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
+                className="block py-4 text-gray-800 hover:text-merqado-blue border-b-2 border-transparent hover:border-merqado-blue"
               >
                 Categorias
               </a>
@@ -187,9 +179,22 @@ export const Header = ({
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
+                  setPage("offers");
+                }}
+                className="flex items-center gap-2 block py-4 text-merqado-orange font-bold hover:text-merqado-blue border-b-2 border-transparent hover:border-merqado-blue"
+              >
+                {" "}
+                <Flame className="w-5 h-5" /> Ofertas
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
                   setPage("orders");
                 }}
-                className="block py-4 text-gray-800 hover:text-merqado-orange border-b-2 border-transparent hover:border-merqado-orange"
+                className="block py-4 text-gray-800 hover:text-merqado-blue border-b-2 border-transparent hover:border-merqado-blue"
               >
                 Meus Pedidos
               </a>

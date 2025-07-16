@@ -2,42 +2,66 @@ const db_gql = require("../config/database");
 const jwt_gql = require("jsonwebtoken");
 
 module.exports = {
-  products: async ({ search, page = 1, limit = 15, categoryId }) => {
+  products: async ({
+    search,
+    categoryId,
+    onSale,
+    sortBy,
+    page = 1,
+    limit = 12,
+  }) => {
     const offset = (page - 1) * limit;
-    let countSql =
-      "SELECT COUNT(*) as totalCount FROM products WHERE stock > 0";
-    let sql = `
-        SELECT p.*, c.name as category_name 
-        FROM products p 
-        LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.stock > 0`;
+
+    let whereClauses = ["p.stock > 0"];
     const params = [];
-    const countParams = [];
 
     if (search) {
-      const searchClause = " AND name LIKE ?";
-      sql += searchClause;
-      countSql += searchClause;
+      whereClauses.push("p.name LIKE ?");
       params.push(`%${search}%`);
-      countParams.push(`%${search}%`);
     }
     if (categoryId) {
-      sql += " AND p.category_id = ?";
-      countSql += " AND category_id = ?";
+      whereClauses.push("p.category_id = ?");
       params.push(categoryId);
-      countParams.push(categoryId);
     }
-    sql += " ORDER BY p.id ASC LIMIT ? OFFSET ?";
-    params.push(limit, offset);
+    if (onSale) {
+      whereClauses.push("p.discount_price IS NOT NULL");
+    }
 
-    const [countRows] = await db_gql.query(countSql, countParams);
+    const whereString =
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+    // Lógica de Ordenação
+    let orderByString = "ORDER BY p.created_at DESC"; // Padrão: mais recentes primeiro
+    if (sortBy === "rating_desc") {
+      orderByString = "ORDER BY p.rating DESC";
+    }
+
+    const countSql = `SELECT COUNT(*) as totalCount FROM products p ${whereString}`;
+    const [countRows] = await db_gql.query(countSql, params);
     const totalPages = Math.ceil(countRows[0].totalCount / limit);
 
-    const [products] = await db_gql.query(sql, params);
+    const sql = `
+        SELECT p.*, c.name as category_name, c.image_url as category_image_url
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        ${whereString}
+        ${orderByString}
+        LIMIT ? OFFSET ?
+    `;
+    const finalParams = [...params, limit, offset];
+
+    const [products] = await db_gql.query(sql, finalParams);
+
     return {
       products: products.map((p) => ({
         ...p,
-        category: { name: p.category_name },
+        category: p.category_id
+          ? {
+              id: p.category_id,
+              name: p.category_name,
+              image_url: p.category_image_url,
+            }
+          : null,
       })),
       totalPages,
     };

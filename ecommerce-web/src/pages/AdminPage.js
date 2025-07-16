@@ -23,8 +23,7 @@ import {
   KeyRound,
 } from "../components/shared/Icons";
 
-// Componente do Modal para Adicionar/Editar Produto
-const ProductFormModal = ({ product, onClose, onSave }) => {
+const ProductFormModal = ({ product, categories, onClose, onSave }) => {
   const { values, errors, handleInputChange, isFormValid, setValues } = useForm(
     {
       name: "",
@@ -33,6 +32,9 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
       stock: "",
       imageUrl: "",
       category_id: "",
+      discount_price: "",
+      is_new: true,
+      is_trending: false,
     },
     {
       name: { required: true },
@@ -42,7 +44,6 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
       category_id: { required: true },
     }
   );
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -54,18 +55,26 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
         stock: product.stock || "",
         imageUrl: product.imageUrl || "",
         category_id: product.category_id || "",
+        discount_price: product.discount_price || "",
+        is_new: product.is_new ?? true,
+        is_trending: product.is_trending ?? false,
       });
     }
   }, [product, setValues]);
 
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setValues((prev) => ({ ...prev, [name]: checked }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid()) {
-      alert("Por favor, corrija os erros no formulário.");
       return;
     }
     setIsSubmitting(true);
-    await onSave(values);
+    const productData = { ...values };
+    await onSave(productData);
     setIsSubmitting(false);
   };
 
@@ -98,15 +107,27 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
             placeholder="Descrição"
             className="w-full px-3 py-2 border rounded-md"
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               name="price"
               type="number"
+              step="0.01"
               value={values.price}
               onChange={handleInputChange}
-              placeholder="Preço (ex: 499.90)"
+              placeholder="Preço Original"
               error={errors.price}
             />
+            <Input
+              name="discount_price"
+              type="number"
+              step="0.01"
+              value={values.discount_price}
+              onChange={handleInputChange}
+              placeholder="Preço com Desconto (opcional)"
+              error={errors.discount_price}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               name="stock"
               type="number"
@@ -115,14 +136,21 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
               placeholder="Estoque"
               error={errors.stock}
             />
-            <Input
+            <select
               name="category_id"
-              type="number"
               value={values.category_id}
               onChange={handleInputChange}
-              placeholder="ID da Categoria"
-              error={errors.category_id}
-            />
+              className={`w-full px-3 py-2 border rounded-md bg-white ${
+                errors.category_id ? "border-red-500" : "border-gray-300"
+              }`}
+            >
+              <option value="">Selecione uma Categoria</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
           <Input
             name="imageUrl"
@@ -131,7 +159,29 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
             placeholder="URL da Imagem"
             error={errors.imageUrl}
           />
-          <div className="flex justify-end space-x-4 mt-6">
+          <div className="flex items-center space-x-8 pt-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="is_new"
+                checked={values.is_new}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded text-merqado-blue focus:ring-merqado-blue"
+              />
+              <span className="text-slate-700">É Novidade?</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="is_trending"
+                checked={values.is_trending}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded text-merqado-blue focus:ring-merqado-blue"
+              />
+              <span className="text-slate-700">É Tendência?</span>
+            </label>
+          </div>
+          <div className="flex justify-end space-x-4 pt-4">
             <button
               type="button"
               onClick={onClose}
@@ -142,7 +192,7 @@ const ProductFormModal = ({ product, onClose, onSave }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 rounded-md text-white bg-merqado-orange hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light"
+              className="px-6 py-2 rounded-md text-white bg-merqado-orange hover:bg-opacity-90 transition-opacity"
             >
               {isSubmitting ? "Salvando..." : "Salvar Produto"}
             </button>
@@ -387,7 +437,7 @@ export const AdminPage = () => {
       const query = `
                 query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
                     products(page: $productsPage, limit: 15) {
-                        products { id name price stock category_id description imageUrl }
+                        products { id name price discount_price stock category_id is_new is_trending description imageUrl }
                         totalPages
                     }
                     categories(page: $categoriesPage, limit: 15) {

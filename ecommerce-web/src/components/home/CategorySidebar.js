@@ -18,6 +18,7 @@ import EletrosIcon from "../../assets/icons/eletros.png";
 import TvIcon from "../../assets/icons/tv.png";
 import HobbieIcon from "../../assets/icons/tent.png";
 import PerfumeIcon from "../../assets/icons/perfume.svg";
+import MouseIcon from "../../assets/icons/mouse.png";
 import DefaultIcon from "../../assets/icons/quotes.svg";
 
 const iconMap = {
@@ -29,6 +30,7 @@ const iconMap = {
   eletrodomésticos: EletrosIcon,
   televisores: TvIcon,
   lazer: HobbieIcon,
+  periféricos: MouseIcon,
 };
 
 const CategoryIcon = ({ categoryName }) => {

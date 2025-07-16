@@ -15,16 +15,21 @@ module.exports = {
           dark: "#c2680fff",
         },
         "merqado-gray": {
-          light: "#F5F5F5", // Cinza claro para fundos
+          light: "#F5F5F5",
+          light2: "#ffffffad", // Cinza claro para fundos
           medium: "#A9A9A9", // Cinza para textos secundários
           dark: "#333333", // Cinza escuro para textos principais
+        },
+        "merqado-offer": {
+          DEFAULT: "#ff133aff",
         },
       },
       backdropBlur: {
         xs: "2px",
         sm: "4px",
-        md: "8px",
+        md: "12px",
         lg: "16px",
+        x1: "26px",
       },
     },
   },

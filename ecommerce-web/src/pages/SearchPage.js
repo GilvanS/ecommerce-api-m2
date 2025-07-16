@@ -4,7 +4,12 @@ import React from "react";
 import { Spinner } from "../components/ui/Spinner";
 import { ProductCardV2 } from "../components/products/ProductCardV2";
 
-export const SearchPage = ({ searchTerm, results, loading }) => {
+export const SearchPage = ({
+  searchTerm,
+  results,
+  loading,
+  onProductSelect,
+}) => {
   // Exibe um spinner enquanto a busca está em andamento
   if (loading) {
     return (
@@ -31,7 +36,11 @@ export const SearchPage = ({ searchTerm, results, loading }) => {
         // Grid com os produtos encontrados
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {results.map((product) => (
-            <ProductCardV2 key={product.id} product={product} />
+            <ProductCardV2
+              key={product.id}
+              product={product}
+              onProductSelect={onProductSelect}
+            />
           ))}
         </div>
       )}

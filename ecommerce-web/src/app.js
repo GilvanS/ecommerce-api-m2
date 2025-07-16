@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
-import "./index.css"; // ou ./styles/tailwind.css
+import "./index.css";
+import { Toaster } from "react-hot-toast";
 
 // Importando Provedores de Contexto
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -11,6 +12,7 @@ import {
   NotificationProvider,
   useNotification,
 } from "./context/NotificationContext";
+import { ToastProvider } from "./context/ToastContext";
 
 // Importando Páginas
 import { HomePage } from "./pages/HomePage";
@@ -26,12 +28,14 @@ import { CategoriesPage } from "./pages/CategoriesPage";
 import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
+import { OffersPage } from "./pages/OffersPage";
 
 // Importando Componentes de Layout e UI
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { Spinner } from "./components/ui/Spinner";
 import { NotificationModal } from "./components/ui/NotificationModal";
+import { SalesToast } from "./components/ui/SalesToast";
 
 // Importando Funções de API
 import { graphqlClient } from "./api/client";
@@ -99,9 +103,27 @@ const Dashboard = () => {
     setPage("search");
     setCurrentSearchTerm(term);
     try {
-      const query = `query Products($search: String) { products(search: $search) { id name description price imageUrl } }`;
+      const query = `
+        query SearchProducts($search: String) {
+          products(search: $search) {
+            products {
+              id
+              name
+              description
+              price
+              discount_price
+              imageUrl
+              is_new
+              category {
+                name
+              }
+            }
+          }
+        }
+      `;
       const data = await graphqlClient(query, { search: term });
-      setSearchResults(data.products);
+      // Extrai a lista de produtos de dentro do objeto de paginação
+      setSearchResults(data.products.products || []);
     } catch (error) {
       console.error("Search failed", error);
       setSearchResults([]);
@@ -110,6 +132,7 @@ const Dashboard = () => {
       setSearchTerm("");
     }
   };
+
   const handleSelectProduct = (productId) => {
     setSelectedProductId(productId);
     setPage("productDetail");
@@ -122,11 +145,19 @@ const Dashboard = () => {
   const renderPage = () => {
     switch (page) {
       case "home":
-        return <HomePage onProductSelect={handleSelectProduct} />;
+        return (
+          <HomePage
+            onProductSelect={handleSelectProduct}
+            onCategorySelect={handleSelectCategory}
+            setPage={setPage}
+          />
+        );
       case "search":
         return (
           <SearchPage
-            searchTerm={searchTerm}
+            searchTerm={currentSearchTerm}
+            results={searchResults}
+            loading={isSearching}
             onProductSelect={handleSelectProduct}
           />
         );
@@ -157,26 +188,29 @@ const Dashboard = () => {
         return (
           <ProductDetailPage productId={selectedProductId} setPage={setPage} />
         );
+      case "offers":
+        return <OffersPage onProductSelect={handleSelectProduct} />;
       default:
-        return <HomePage onProductSelect={handleSelectProduct} />;
+        return (
+          <HomePage
+            onProductSelect={handleSelectProduct}
+            onCategorySelect={handleSelectCategory}
+            setPage={setPage}
+          />
+        );
     }
   };
 
   return (
-    <div className="bg-merqado-gray-light min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header
         setPage={setPage}
         handleSearch={handleSearch}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <main className="flex-grow">
-        {" "}
-        {renderPage()}
-        <Routes>
-          <Route path="/categoria/:id" element={<CategoryProductsPage />} />
-        </Routes>
-      </main>
+      <SalesToast onProductSelect={handleSelectProduct} />
+      <main className="flex-grow"> {renderPage()}</main>
       <Footer />
     </div>
   );
@@ -189,7 +223,25 @@ const App = () => {
       <NotificationProvider>
         <FavoritesProvider>
           <CartProvider>
-            <AppContent />
+            <ToastProvider>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  className: "",
+                  style: {
+                    background: "rgba(247, 246, 246, 0.92)",
+                    border: "1px solid rgba(109, 109, 109, 0.14)",
+                    color: "#333333",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)", // necessário para Safari
+                    boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                  },
+                }}
+              />
+              <AppContent />
+            </ToastProvider>
           </CartProvider>
         </FavoritesProvider>
       </NotificationProvider>
