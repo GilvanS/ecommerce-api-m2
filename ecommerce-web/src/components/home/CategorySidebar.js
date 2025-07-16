@@ -76,7 +76,7 @@ const AccordionItem = ({ title, icon, children, isOpen, onToggle }) => {
   );
 };
 
-export const CategorySidebar = () => {
+export const CategorySidebar = ({ onProductSelect }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openCategory, setOpenCategory] = useState(null);
@@ -144,6 +144,10 @@ export const CategorySidebar = () => {
                       <li key={product.id}>
                         <a
                           href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onProductSelect(product.id); // Ação de clique adicionada
+                          }}
                           className="block px-4 py-2 rounded-md text-merqado-gray-dark/90 hover:bg-merqado-blue-light hover:text-merqado-blue font-medium transition-colors duration-150"
                         >
                           {product.name}

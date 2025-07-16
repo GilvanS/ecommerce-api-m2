@@ -2,7 +2,7 @@ const db_gql = require("../config/database");
 const jwt_gql = require("jsonwebtoken");
 
 module.exports = {
-  products: async ({ search, page = 1, limit = 15 }) => {
+  products: async ({ search, page = 1, limit = 15, categoryId }) => {
     const offset = (page - 1) * limit;
     let countSql =
       "SELECT COUNT(*) as totalCount FROM products WHERE stock > 0";
@@ -21,7 +21,12 @@ module.exports = {
       params.push(`%${search}%`);
       countParams.push(`%${search}%`);
     }
-
+    if (categoryId) {
+      sql += " AND p.category_id = ?";
+      countSql += " AND category_id = ?";
+      params.push(categoryId);
+      countParams.push(categoryId);
+    }
     sql += " ORDER BY p.id ASC LIMIT ? OFFSET ?";
     params.push(limit, offset);
 

@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, useParams } from "react-router-dom";
+import "./index.css"; // ou ./styles/tailwind.css
 
 // Importando Provedores de Contexto
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -23,6 +25,7 @@ import { SearchPage } from "./pages/SearchPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
+import { CategoryProductsPage } from "./pages/CategoryProductsPage";
 
 // Importando Componentes de Layout e UI
 import { Header } from "./components/layout/Header";
@@ -80,7 +83,6 @@ const AppContent = () => {
     </>
   );
 };
-
 // Componente que renderiza a aplicação quando o usuário está autenticado
 const Dashboard = () => {
   const [page, setPage] = useState("home");
@@ -89,6 +91,7 @@ const Dashboard = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const handleSearch = async (term) => {
     if (!term) return;
@@ -111,6 +114,10 @@ const Dashboard = () => {
     setSelectedProductId(productId);
     setPage("productDetail");
   };
+  const handleSelectCategory = (categoryId) => {
+    setSelectedCategoryId(categoryId);
+    setPage("categoryProducts");
+  };
 
   const renderPage = () => {
     switch (page) {
@@ -124,7 +131,14 @@ const Dashboard = () => {
           />
         );
       case "categories":
-        return <CategoriesPage onProductSelect={handleSelectProduct} />;
+        return <CategoriesPage onCategorySelect={handleSelectCategory} />;
+      case "categoryProducts":
+        return (
+          <CategoryProductsPage
+            categoryId={selectedCategoryId}
+            onProductSelect={handleSelectProduct}
+          />
+        );
       case "favorites":
         return <FavoritesPage onProductSelect={handleSelectProduct} />;
       case "cart":
@@ -139,7 +153,6 @@ const Dashboard = () => {
         return <SuccessPage setPage={setPage} />;
       case "admin":
         return <AdminPage />;
-      // NOVO: Rota para a página de detalhes
       case "productDetail":
         return (
           <ProductDetailPage productId={selectedProductId} setPage={setPage} />
@@ -157,7 +170,13 @@ const Dashboard = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <main className="flex-grow">{renderPage()}</main>
+      <main className="flex-grow">
+        {" "}
+        {renderPage()}
+        <Routes>
+          <Route path="/categoria/:id" element={<CategoryProductsPage />} />
+        </Routes>
+      </main>
       <Footer />
     </div>
   );

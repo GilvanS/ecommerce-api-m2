@@ -2,7 +2,7 @@
 import React from "react";
 import { ProductCardSmall } from "../products/ProductCardSmall";
 
-export const ProductColumn = ({ title, products }) => {
+export const ProductColumn = ({ title, products, onProductSelect }) => {
   return (
     <div className="flex-1 bg-white/40 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6">
       <div className="flex justify-between items-center mb-4">
@@ -21,7 +21,11 @@ export const ProductColumn = ({ title, products }) => {
           </p>
         ) : (
           products.map((product) => (
-            <ProductCardSmall key={product.id} product={product} />
+            <ProductCardSmall
+              key={product.id}
+              product={product}
+              onProductSelect={onProductSelect}
+            />
           ))
         )}
       </div>

@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router";
 
 // Importando o cliente GraphQL para buscar dados
 import { graphqlClient } from "../api/client";
@@ -7,11 +9,12 @@ import { graphqlClient } from "../api/client";
 import { Spinner } from "../components/ui/Spinner";
 import { Pagination } from "../components/ui/Pagination"; // Importando o componente de paginação
 
-export const CategoriesPage = () => {
+export const CategoriesPage = ({ onCategorySelect }) => {
   const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const CATEGORIES_PER_PAGE = 8;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -41,7 +44,6 @@ export const CategoriesPage = () => {
 
     fetchCategories();
   }, []);
-
   // Lógica para calcular as categorias da página atual e o total de páginas
   const { currentCategories, totalPages } = useMemo(() => {
     const indexOfLastCategory = currentPage * CATEGORIES_PER_PAGE;
@@ -80,6 +82,7 @@ export const CategoriesPage = () => {
             {currentCategories.map((cat) => (
               <div
                 key={cat.id}
+                onClick={() => onCategorySelect(cat.id)}
                 className="relative overflow-hidden rounded-lg group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300"
               >
                 <img

@@ -39,10 +39,11 @@ export const HomePage = ({ onProductSelect }) => {
                                 name
                                 description
                                 price
+                                category_id
                                 imageUrl
                                 is_new
                                 is_trending
-                                category {
+                                category { 
                                     name
                                 }
                             }
@@ -77,7 +78,7 @@ export const HomePage = ({ onProductSelect }) => {
       <HeroSlider />
       <div className="container mx-auto px-4 my-12">
         <div className="flex flex-col md:flex-row gap-8">
-          <CategorySidebar />
+          <CategorySidebar onProductSelect={onProductSelect} />
           <div className="w-full md:w-3/4">
             {loading && allProducts.length === 0 ? (
               <div className="flex justify-center items-center h-full">
@@ -85,9 +86,21 @@ export const HomePage = ({ onProductSelect }) => {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <ProductColumn title="Novidades" products={newArrivals} />
-                <ProductColumn title="Tendências" products={trending} />
-                <ProductColumn title="Mais Avaliados" products={topRated} />
+                <ProductColumn
+                  title="Novidades"
+                  products={newArrivals}
+                  onProductSelect={onProductSelect}
+                />
+                <ProductColumn
+                  title="Tendências"
+                  products={trending}
+                  onProductSelect={onProductSelect}
+                />
+                <ProductColumn
+                  title="Mais Avaliados"
+                  products={topRated}
+                  onProductSelect={onProductSelect}
+                />
               </div>
             )}
           </div>

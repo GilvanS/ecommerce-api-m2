@@ -2,7 +2,7 @@ import React from "react";
 import { formatCurrency } from "../../utils/formatters";
 import { StarRating } from "../shared/StarRating"; // <- novo import
 
-export const ProductCardSmall = ({ product }) => {
+export const ProductCardSmall = ({ product, onProductSelect }) => {
   const fakeRating = Math.random() * 5;
   if (!product) return null;
 
@@ -18,6 +18,7 @@ export const ProductCardSmall = ({ product }) => {
           {product.category?.name || "Categoria"}
         </p>
         <h4
+          onClick={() => onProductSelect(product.id)}
           className="font-semibold text-merqado-gray-dark hover:text-merqado-blue cursor-pointer truncate"
           title={product.name}
         >

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 /*
 ================================================================================
 ARQUIVO: src/context/FavoritesContext.js (CORRIGIDO)
@@ -101,7 +103,7 @@ export const FavoritesProvider = ({ children }) => {
       toggleFavorite,
       isFavorite,
     }),
-    [favoriteProducts, loading]
+    [favoriteProducts, isFavorite, loading, toggleFavorite]
   );
 
   return (
