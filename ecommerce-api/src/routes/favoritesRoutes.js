@@ -1,67 +1,59 @@
 /*
 ================================================================================
-ARQUIVO: src/routes/favoritesRoutes.js (ATUALIZADO)
+ARQUIVO: src/routes/favoritesRoutes.js (CORRIGIDO)
 ================================================================================
 */
-const express_fav = require("express");
-const router_fav = express_fav.Router();
-const favoritesController = require("../controllers/favoritesController");
+const express = require("express");
+const router = express.Router();
 
-// Middleware para responder a métodos não permitidos e incluir header Allow
-const methodNotAllowed = (req, res) => {
-  const allowedMethods = req.route.stack
-    .filter((layer) => layer.method)
-    .map((layer) => layer.method.toUpperCase());
-  res.set("Allow", allowedMethods.join(", "));
-  return res.status(405).json({
+// a importação deve subir uma pasta até controllers
+const favoritesController = require("../controllers/favoritesController");
+const { authMiddleware } = require("../middleware/authMiddleware");
+
+// Middleware para responder a métodos não permitidos
+const methodNotAllowed = (req, res) =>
+  res.status(405).json({
     error: {
       code: "METHOD_NOT_ALLOWED",
       message: "O método HTTP utilizado não é permitido para esta rota.",
     },
   });
-};
 
 /**
  * @swagger
  * tags:
  *   - name: Favorites
- *     description: Gerenciamento de favoritos do usuário
+ *     description: Marcar/Desmarcar produtos como favoritos (requer autenticação)
  */
 
 /**
  * @swagger
- * /api/favorites/toggle:
+ * /api/favorites/{productId}:
  *   post:
  *     tags: [Favorites]
- *     summary: Adiciona ou remove um produto dos favoritos
+ *     summary: Marca ou desmarca um produto como favorito para o usuário autenticado
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - productId
- *             properties:
- *               productId:
- *                 type: integer
- *                 example: 1
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do produto a favoritar/desfavoritar
  *     responses:
  *       200:
- *         description: Removido dos favoritos
- *       201:
- *         description: Adicionado aos favoritos
+ *         description: Status do favorito alterado com sucesso
  *       401:
- *         description: Não autorizado
+ *         description: Não autorizado (usuário não autenticado)
+ *       404:
+ *         description: Produto não encontrado
  *       405:
  *         description: Método não permitido
  */
-router_fav
-  .route("/toggle")
-  .options((req, res) => res.set("Allow", "POST,OPTIONS").sendStatus(204))
-  .post(favoritesController.toggleFavorite)
+router
+  .route("/:productId")
+  .post(authMiddleware, favoritesController.toggleFavorite)
   .all(methodNotAllowed);
 
-module.exports = router_fav;
+module.exports = router;

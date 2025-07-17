@@ -21,11 +21,13 @@ apiClient.interceptors.response.use(
       response && (response.status === 401 || response.status === 403);
 
     // CORREÇÃO: Não interceta erros na rota de login. Deixa a página de login tratar.
+    // A verificação `config.url.endsWith` garante que estamos a ignorar apenas o endpoint de login.
     if (config.url.endsWith("/users/login")) {
-      return Promise.reject(error);
+      return Promise.reject(error); // Rejeita a promessa para que o .catch() local possa lidar com o erro.
     }
 
     if (needsReauthentication) {
+      // Para todas as outras rotas, dispara o evento de sessão expirada.
       window.dispatchEvent(new CustomEvent("auth-error"));
     }
 

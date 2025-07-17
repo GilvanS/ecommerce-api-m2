@@ -1,10 +1,12 @@
 /*
 ================================================================================
-ARQUIVO: src/routes/orderRoutes.js (ATUALIZADO E CORRIGIDO)
+ARQUIVO: src/routes/orderRoutes.js (CORRIGIDO)
 ================================================================================
 */
 const express = require("express");
 const router = express.Router();
+
+// Aponta para o arquivo correto de controller
 const orderController = require("../controllers/orderController");
 
 // Middleware para responder a métodos não permitidos
@@ -39,84 +41,11 @@ const methodNotAllowed = (req, res) =>
  *       405:
  *         description: Método não permitido.
  */
-
-/**
- * @swagger
- * /api/orders:
- *   post:
- *     tags: [Orders]
- *     summary: Cria um novo pedido a partir do carrinho
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - cart
- *               - paymentMethod
- *               - shippingAddress
- *             properties:
- *               cart:
- *                 type: array
- *                 items:
- *                   type: object
- *                   required:
- *                     - id
- *                     - quantity
- *                     - price
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 1
- *                     quantity:
- *                       type: integer
- *                       example: 2
- *                     price:
- *                       type: number
- *                       example: 12500.00
- *               paymentMethod:
- *                 type: string
- *                 example: "credit_card"
- *               shippingAddress:
- *                 type: object
- *                 required:
- *                   - cpf
- *                   - address
- *                   - number
- *                   - cep
- *                   - city
- *                 properties:
- *                   cpf:
- *                     type: string
- *                     example: "123.456.789-00"
- *                   address:
- *                     type: string
- *                     example: "Avenida Paulista"
- *                   number:
- *                     type: string
- *                     example: "1000"
- *                   cep:
- *                     type: string
- *                     example: "01310-100"
- *                   city:
- *                     type: string
- *                     example: "São Paulo"
- *     responses:
- *       201:
- *         description: Pedido criado com sucesso.
- *       400:
- *         description: Dados do pedido incompletos.
- *       401:
- *         description: Não autorizado.
- *       405:
- *         description: Método não permitido.
- */
 router
   .route("/")
+  // A função abaixo deve existir e estar exportada em orderController.js
   .get(orderController.getOrders)
+  // A função abaixo também
   .post(orderController.createOrder)
   .all(methodNotAllowed);
 

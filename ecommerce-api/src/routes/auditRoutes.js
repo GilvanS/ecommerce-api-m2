@@ -1,6 +1,7 @@
+// src/routes/auditRoutes.js
 /*
 ================================================================================
-ARQUIVO: src/routes/auditRoutes.js (NOVO)
+ARQUIVO: src/routes/auditRoutes.js
 ================================================================================
 */
 const express = require("express");
@@ -28,8 +29,8 @@ const methodNotAllowed = (req, res) =>
  *       - Audit
  *     summary: Retorna um resumo dos dados de auditoria (Admin)
  *     description: >
- *       Lê o ficheiro de log de auditoria e retorna dados agregados, como
- *       contagem de ações por tipo e atividade por dia.
+ *       Lê o ficheiro de log de auditoria e retorna dados agregados,
+ *       como contagem de ações por tipo e atividade por dia.
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -40,7 +41,6 @@ const methodNotAllowed = (req, res) =>
  *       '500':
  *         description: Erro ao ler ou processar o ficheiro de log.
  */
-
 router
   .route("/summary")
   .get(authMiddleware, adminMiddleware, auditController.getAuditSummary)

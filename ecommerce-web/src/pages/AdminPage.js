@@ -14,6 +14,8 @@ import { formatCurrency } from "../utils/formatters";
 import { Pagination } from "../components/ui/Pagination";
 import { DoughnutChart } from "../components/admin/DoughnutChart";
 import { BarChart } from "../components/admin/BarChart";
+import { ConfirmationModal } from "../components/ui/ConfirmationModal";
+import { useNotification } from "../context/NotificationContext";
 
 // Importando Ícones
 import {
@@ -352,11 +354,17 @@ const UserRoleModal = ({ user, onClose, onSave }) => {
 const ResetPasswordModal = ({ user, onClose, onSave }) => {
   const [newPassword, setNewPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showModal } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword.length < 8) {
-      alert("A nova senha deve ter pelo menos 8 caracteres.");
+      // CORREÇÃO: Substitui o alert() pela chamada ao modal
+      showModal({
+        title: "Senha Inválida",
+        message: "A nova senha deve ter pelo menos 8 caracteres.",
+        onConfirm: () => {}, // Apenas fecha o modal
+      });
       return;
     }
     setIsSubmitting(true);
@@ -433,6 +441,12 @@ export const AdminPage = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
     useState(false);
+  const [confirmationState, setConfirmationState] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -501,7 +515,21 @@ export const AdminPage = () => {
     await saveFunction();
     fetchData();
   };
-
+  const openConfirmationModal = ({ title, message, onConfirm }) => {
+    setConfirmationState({ isOpen: true, title, message, onConfirm });
+  };
+  const closeConfirmationModal = () => {
+    setConfirmationState({
+      isOpen: false,
+      title: "",
+      message: "",
+      onConfirm: () => {},
+    });
+  };
+  const confirmAndDelete = async () => {
+    await confirmationState.onConfirm();
+    closeConfirmationModal();
+  };
   const handleAddProduct = () => {
     setEditingProduct(null);
     setIsProductModalOpen(true);
@@ -510,12 +538,13 @@ export const AdminPage = () => {
     setEditingProduct(product);
     setIsProductModalOpen(true);
   };
-  const handleDeleteProduct = async (productId) => {
-    if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-      await handleSaveAndRefetch(async () => {
-        await apiClient.delete(`/products/${productId}`);
-      });
-    }
+  const handleDeleteProduct = (productId) => {
+    openConfirmationModal({
+      title: "Confirmar Exclusão de Produto",
+      message: `Tem certeza que deseja excluir o produto com ID ${productId}? Esta ação não pode ser desfeita.`,
+      onConfirm: () =>
+        handleSaveAndRefetch(() => apiClient.delete(`/products/${productId}`)),
+    });
   };
   const handleSaveProduct = async (productData) => {
     await handleSaveAndRefetch(async () => {
@@ -546,12 +575,15 @@ export const AdminPage = () => {
       setIsCategoryModalOpen(false);
     });
   };
-  const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("Tem certeza que deseja excluir esta categoria?")) {
-      await handleSaveAndRefetch(async () => {
-        await apiClient.delete(`/categories/${categoryId}`);
-      });
-    }
+  const handleDeleteCategory = (categoryId) => {
+    openConfirmationModal({
+      title: "Confirmar Exclusão de Categoria",
+      message: `Tem certeza que deseja excluir a categoria com ID ${categoryId}? Apenas categorias sem produtos podem ser excluídas.`,
+      onConfirm: () =>
+        handleSaveAndRefetch(() =>
+          apiClient.delete(`/categories/${categoryId}`)
+        ),
+    });
   };
 
   const handleEditUser = (user) => {
@@ -564,13 +596,15 @@ export const AdminPage = () => {
       setIsUserModalOpen(false);
     });
   };
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm("Tem certeza que deseja excluir este usuário?")) {
-      await handleSaveAndRefetch(async () => {
-        await apiClient.delete(`/users/${userId}`);
-      });
-    }
+  const handleDeleteUser = (userId) => {
+    openConfirmationModal({
+      title: "Confirmar Exclusão de Usuário",
+      message: `Tem certeza que deseja excluir o usuário com ID ${userId}?`,
+      onConfirm: () =>
+        handleSaveAndRefetch(() => apiClient.delete(`/users/${userId}`)),
+    });
   };
+
   const handleResetPassword = (user) => {
     setEditingUser(user);
     setIsResetPasswordModalOpen(true);
@@ -638,6 +672,13 @@ export const AdminPage = () => {
           onSave={handleSaveNewPassword}
         />
       )}
+      <ConfirmationModal
+        isOpen={confirmationState.isOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={confirmAndDelete}
+        title={confirmationState.title}
+        message={confirmationState.message}
+      />
 
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-merqado-gray-dark flex items-center gap-3">

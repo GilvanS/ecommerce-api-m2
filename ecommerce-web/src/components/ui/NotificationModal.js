@@ -8,7 +8,7 @@ export const NotificationModal = ({ isOpen, title, message, onConfirm }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4"
+      className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-[60] p-4"
       aria-modal="true"
       role="dialog"
     >

@@ -4,6 +4,8 @@
 
 ### 🔐 Autenticação e Usuários
 
+🔗 [Swagger REST API Docs](http://localhost:3005/api-docs/)
+
 - Validar que o registro falha se algum campo obrigatório estiver ausente.
 - Validar que senhas fracas são rejeitadas conforme critérios (mín. 8 caracteres, 1 maiúscula, 1 número, 1 especial).
 - Validar que o username duplicado retorna status 409.

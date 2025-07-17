@@ -1,3 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/*
+================================================================================
+ARQUIVO: src/context/AuthContext.js (ATUALIZADO E CORRIGIDO)
+================================================================================
+*/
 import React, {
   useState,
   useEffect,
@@ -27,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       if (isAuthenticated) {
         try {
           const data = await graphqlClient(
-            `query { profile { id name age city state username role created_at } }`
+            `query { profile { id name age city state username role } }`
           );
           setUserProfile(data.profile);
         } catch (error) {
@@ -40,8 +46,9 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
   }, [isAuthenticated, logout]);
 
+  // --- FUNÇÃO CORRIGIDA ---
   const login = async (username, password) => {
-    setLoading(true);
+    // O estado de loading agora é gerido pelo componente que chama, para um feedback mais preciso.
     try {
       const { data } = await apiClient.post("/users/login", {
         username,
@@ -49,29 +56,21 @@ export const AuthProvider = ({ children }) => {
       });
       setToken(data.token);
       localStorage.setItem("authToken", data.token);
-      return { success: true };
+      // Se o login for bem-sucedido, o fluxo continua no componente que chamou.
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Erro de conexão.",
-      };
-    } finally {
-      setLoading(false);
+      // Em vez de retornar um objeto de erro, simplesmente RELANÇAMOS o erro.
+      // Isto permite que o `.catch()` no componente LoginPage seja ativado.
+      throw error;
     }
   };
 
   const register = async (profileData) => {
-    setLoading(true);
+    // Refatorado para também lançar o erro
     try {
       await apiClient.post("/users/register", profileData);
       return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Erro de registro.",
-      };
-    } finally {
-      setLoading(false);
+      throw error;
     }
   };
 
@@ -85,7 +84,7 @@ export const AuthProvider = ({ children }) => {
       register,
       logout,
     }),
-    [token, userProfile, isAuthenticated, loading, logout]
+    [token, userProfile, isAuthenticated, loading, logout, login, register]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

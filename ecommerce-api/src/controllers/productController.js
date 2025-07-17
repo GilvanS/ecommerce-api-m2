@@ -44,16 +44,16 @@ exports.createProduct = async (req, res) => {
 
   try {
     const sql = `
-            INSERT INTO products 
-            (name, description, price, discount_price, stock, imageUrl, category_id, is_new, is_trending) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
+      INSERT INTO products 
+      (name, description, price, discount_price, stock, imageUrl, category_id, is_new, is_trending) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
     const finalDiscountPrice =
       discount_price && parseFloat(discount_price) > 0
         ? parseFloat(discount_price)
         : null;
 
-    await db.query(sql, [
+    const [result] = await db.query(sql, [
       name,
       description,
       parseFloat(price),

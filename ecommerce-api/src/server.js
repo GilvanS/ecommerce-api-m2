@@ -28,7 +28,7 @@ const ensureAdminExists = async () => {
       const hashedPassword = await bcrypt.hash(adminPassword, salt);
 
       const sql =
-        "INSERT INTO users (name, age, city, state, username, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO users (name, age, city, state, username, password, role, email) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
       await db.query(sql, [
         "Admin Principal",
         99,
@@ -37,6 +37,7 @@ const ensureAdminExists = async () => {
         adminUsername,
         hashedPassword,
         "admin",
+        "chriscsantos.qa@gmail.com",
       ]);
       console.log("Usuário admin criado com sucesso!");
     } else {

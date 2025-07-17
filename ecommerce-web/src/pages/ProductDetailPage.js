@@ -74,7 +74,6 @@ export const ProductDetailPage = ({ productId, setPage }) => {
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
-    alert(`${quantity}x ${product.name} adicionado(s) ao carrinho!`);
   };
 
   // Prepara o conteúdo para as abas

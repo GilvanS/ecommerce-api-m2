@@ -9,14 +9,12 @@ const { logAudit } = require("../utils/logger");
 exports.createCategory = async (req, res) => {
   const { name, image_url } = req.body;
   if (!name || !image_url) {
-    return res
-      .status(400)
-      .json({
-        error: {
-          code: "INVALID_INPUT",
-          message: "Nome e URL da imagem são obrigatórios.",
-        },
-      });
+    return res.status(400).json({
+      error: {
+        code: "INVALID_INPUT",
+        message: "Nome e URL da imagem são obrigatórios.",
+      },
+    });
   }
   try {
     const sql = "INSERT INTO categories (name, image_url) VALUES (?, ?)";
@@ -33,24 +31,35 @@ exports.createCategory = async (req, res) => {
   } catch (error) {
     // Tratamento de erro para nome de categoria duplicado
     if (error.code === "ER_DUP_ENTRY") {
-      return res
-        .status(409)
-        .json({
-          error: {
-            code: "DUPLICATE_CATEGORY_NAME",
-            message: "Já existe uma categoria com este nome.",
-          },
-        });
-    }
-    console.error("Erro ao criar categoria:", error);
-    res
-      .status(500)
-      .json({
+      return res.status(409).json({
         error: {
-          code: "CATEGORY_CREATE_FAILED",
-          message: "Erro de servidor ao criar a categoria.",
+          code: "DUPLICATE_CATEGORY_NAME",
+          message: "Já existe uma categoria com este nome.",
         },
       });
+    }
+    console.error("Erro ao criar categoria:", error);
+    res.status(500).json({
+      error: {
+        code: "CATEGORY_CREATE_FAILED",
+        message: "Erro de servidor ao criar a categoria.",
+      },
+    });
+  }
+};
+
+exports.getCategories = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT id, name, image_url FROM categories");
+    return res.status(200).json(rows);
+  } catch (error) {
+    console.error("Erro ao buscar categorias:", error);
+    return res.status(500).json({
+      error: {
+        code: "CATEGORY_FETCH_FAILED",
+        message: "Erro de servidor ao buscar categorias.",
+      },
+    });
   }
 };
 
@@ -58,28 +67,24 @@ exports.updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name, image_url } = req.body;
   if (!name || !image_url) {
-    return res
-      .status(400)
-      .json({
-        error: {
-          code: "INVALID_INPUT",
-          message: "Nome e URL da imagem são obrigatórios.",
-        },
-      });
+    return res.status(400).json({
+      error: {
+        code: "INVALID_INPUT",
+        message: "Nome e URL da imagem são obrigatórios.",
+      },
+    });
   }
   try {
     const sql = "UPDATE categories SET name = ?, image_url = ? WHERE id = ?";
     const [result] = await db.query(sql, [name, image_url, id]);
 
     if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({
-          error: {
-            code: "CATEGORY_NOT_FOUND",
-            message: "Categoria não encontrada.",
-          },
-        });
+      return res.status(404).json({
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          message: "Categoria não encontrada.",
+        },
+      });
     }
 
     logAudit({
@@ -93,24 +98,20 @@ exports.updateCategory = async (req, res) => {
   } catch (error) {
     // CORREÇÃO: Tratamento específico para nome de categoria duplicado
     if (error.code === "ER_DUP_ENTRY") {
-      return res
-        .status(409)
-        .json({
-          error: {
-            code: "DUPLICATE_CATEGORY_NAME",
-            message: "Já existe uma categoria com este nome.",
-          },
-        });
-    }
-    console.error("Erro ao atualizar categoria:", error);
-    res
-      .status(500)
-      .json({
+      return res.status(409).json({
         error: {
-          code: "CATEGORY_UPDATE_FAILED",
-          message: "Erro de servidor ao atualizar a categoria.",
+          code: "DUPLICATE_CATEGORY_NAME",
+          message: "Já existe uma categoria com este nome.",
         },
       });
+    }
+    console.error("Erro ao atualizar categoria:", error);
+    res.status(500).json({
+      error: {
+        code: "CATEGORY_UPDATE_FAILED",
+        message: "Erro de servidor ao atualizar a categoria.",
+      },
+    });
   }
 };
 
@@ -122,29 +123,25 @@ exports.deleteCategory = async (req, res) => {
       [id]
     );
     if (products.length > 0) {
-      return res
-        .status(400)
-        .json({
-          error: {
-            code: "CATEGORY_IN_USE",
-            message:
-              "Não é possível excluir. Esta categoria está em uso por produtos existentes.",
-          },
-        });
+      return res.status(400).json({
+        error: {
+          code: "CATEGORY_IN_USE",
+          message:
+            "Não é possível excluir. Esta categoria está em uso por produtos existentes.",
+        },
+      });
     }
     const [result] = await db.query("DELETE FROM categories WHERE id = ?", [
       id,
     ]);
 
     if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({
-          error: {
-            code: "CATEGORY_NOT_FOUND",
-            message: "Categoria não encontrada.",
-          },
-        });
+      return res.status(404).json({
+        error: {
+          code: "CATEGORY_NOT_FOUND",
+          message: "Categoria não encontrada.",
+        },
+      });
     }
 
     logAudit({
@@ -157,13 +154,11 @@ exports.deleteCategory = async (req, res) => {
     res.status(200).json({ message: "Categoria excluída com sucesso!" });
   } catch (error) {
     console.error("Erro ao excluir categoria:", error);
-    res
-      .status(500)
-      .json({
-        error: {
-          code: "CATEGORY_DELETE_FAILED",
-          message: "Erro de servidor ao excluir a categoria.",
-        },
-      });
+    res.status(500).json({
+      error: {
+        code: "CATEGORY_DELETE_FAILED",
+        message: "Erro de servidor ao excluir a categoria.",
+      },
+    });
   }
 };

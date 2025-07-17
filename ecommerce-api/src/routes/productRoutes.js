@@ -1,6 +1,7 @@
+// src/routes/productRoutes.js
 /*
 ================================================================================
-ARQUIVO: src/routes/productRoutes.js (ATUALIZADO)
+ARQUIVO: src/routes/productRoutes.js
 ================================================================================
 */
 const express = require("express");
@@ -11,7 +12,7 @@ const {
   adminMiddleware,
 } = require("../middleware/authMiddleware");
 
-// Middleware para responder a métodos não permitidos e incluir header Allow
+// Middleware para métodos não permitidos
 const methodNotAllowed = (req, res) => {
   const allowedMethods = req.route.stack
     .filter((layer) => layer.method)
@@ -29,26 +30,24 @@ const methodNotAllowed = (req, res) => {
  * @swagger
  * /api/products:
  *   get:
- *     tags: [Products]
+ *     tags:
+ *       - Products
  *     summary: Retorna todos os produtos
  *     responses:
- *       200:
- *         description: Lista de produtos retornada com sucesso
- *       405:
- *         description: Método não permitido
+ *       '200':
+ *         description: Lista de produtos retornada com sucesso.
+ *       '500':
+ *         description: Erro interno ao buscar produtos.
  */
-router
-  .route("/")
-  .options((req, res) => res.set("Allow", "GET,POST,OPTIONS").sendStatus(204))
-  .get(productController.getProducts)
-  .all(methodNotAllowed);
+router.route("/").get(productController.getProducts).all(methodNotAllowed);
 
 /**
  * @swagger
  * /api/products:
  *   post:
- *     tags: [Products]
- *     summary: Cria um novo produto
+ *     tags:
+ *       - Products
+ *     summary: Cria um novo produto (Admin)
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -64,23 +63,36 @@ router
  *                 type: string
  *               price:
  *                 type: number
+ *               discount_price:
+ *                 type: number
  *               stock:
  *                 type: integer
  *               imageUrl:
  *                 type: string
  *               category_id:
  *                 type: integer
+ *               is_new:
+ *                 type: boolean
+ *               is_trending:
+ *                 type: boolean
+ *             required:
+ *               - name
+ *               - price
+ *               - stock
+ *               - imageUrl
+ *               - category_id
  *     responses:
- *       201:
- *         description: Produto criado com sucesso
- *       403:
- *         description: Acesso negado (não é admin)
- *       405:
- *         description: Método não permitido
+ *       '201':
+ *         description: Produto criado com sucesso.
+ *       '400':
+ *         description: Campos essenciais obrigatórios.
+ *       '403':
+ *         description: Acesso negado. Requer privilégios de administrador.
+ *       '500':
+ *         description: Erro interno ao criar produto.
  */
 router
   .route("/")
-  .options((req, res) => res.set("Allow", "GET,POST,OPTIONS").sendStatus(204))
   .post(authMiddleware, adminMiddleware, productController.createProduct)
   .all(methodNotAllowed);
 
@@ -88,16 +100,18 @@ router
  * @swagger
  * /api/products/{id}:
  *   put:
- *     tags: [Products]
- *     summary: Atualiza um produto existente
+ *     tags:
+ *       - Products
+ *     summary: Atualiza um produto existente (Admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
+ *         required: true
+ *         description: ID do produto
  *     requestBody:
  *       required: true
  *       content:
@@ -111,23 +125,32 @@ router
  *                 type: string
  *               price:
  *                 type: number
+ *               discount_price:
+ *                 type: number
  *               stock:
  *                 type: integer
  *               imageUrl:
  *                 type: string
  *               category_id:
  *                 type: integer
+ *               is_new:
+ *                 type: boolean
+ *               is_trending:
+ *                 type: boolean
  *     responses:
- *       200:
- *         description: Produto atualizado com sucesso
- *       403:
- *         description: Acesso negado (não é admin)
- *       405:
- *         description: Método não permitido
+ *       '200':
+ *         description: Produto atualizado com sucesso.
+ *       '400':
+ *         description: Campos essenciais obrigatórios.
+ *       '403':
+ *         description: Acesso negado. Requer privilégios de administrador.
+ *       '404':
+ *         description: Produto não encontrado.
+ *       '500':
+ *         description: Erro interno ao atualizar produto.
  */
 router
   .route("/:id")
-  .options((req, res) => res.set("Allow", "PUT,DELETE,OPTIONS").sendStatus(204))
   .put(authMiddleware, adminMiddleware, productController.updateProduct)
   .all(methodNotAllowed);
 
@@ -135,27 +158,30 @@ router
  * @swagger
  * /api/products/{id}:
  *   delete:
- *     tags: [Products]
- *     summary: Exclui um produto
+ *     tags:
+ *       - Products
+ *     summary: Exclui um produto (Admin)
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
+ *         required: true
+ *         description: ID do produto
  *     responses:
- *       200:
- *         description: Produto excluído com sucesso
- *       403:
- *         description: Acesso negado (não é admin)
- *       405:
- *         description: Método não permitido
+ *       '200':
+ *         description: Produto excluído com sucesso.
+ *       '403':
+ *         description: Acesso negado. Requer privilégios de administrador.
+ *       '404':
+ *         description: Produto não encontrado.
+ *       '500':
+ *         description: Erro interno ao excluir produto.
  */
 router
   .route("/:id")
-  .options((req, res) => res.set("Allow", "PUT,DELETE,OPTIONS").sendStatus(204))
   .delete(authMiddleware, adminMiddleware, productController.deleteProduct)
   .all(methodNotAllowed);
 

@@ -30,7 +30,8 @@ import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
 import { OffersPage } from "./pages/OffersPage";
-import { BookOpen } from "./components/shared/Icons";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage"; // NOVO
+import { ResetPasswordPage } from "./pages/ResetPasswordPage"; // NOVO
 
 // Importando Componentes de Layout e UI
 import { Header } from "./components/layout/Header";
@@ -38,6 +39,7 @@ import { Footer } from "./components/layout/Footer";
 import { Spinner } from "./components/ui/Spinner";
 import { NotificationModal } from "./components/ui/NotificationModal";
 import { SalesToast } from "./components/ui/SalesToast";
+import { BookOpen } from "./components/shared/Icons";
 
 // Importando Funções de API
 import { graphqlClient } from "./api/client";
@@ -48,26 +50,27 @@ const AppContent = () => {
   const { showModal, modalState } = useNotification();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Configura o listener de eventos para erros de autenticação
+  // detecta rota inicial para login/forgot/reset
+  const getInitialPage = () => {
+    const path = window.location.pathname;
+    if (path === "/reset-password") return "resetPassword";
+    if (path === "/forgot-password") return "forgotPassword";
+    return "login";
+  };
+  const [page, setPage] = useState(getInitialPage);
+
+  // listener de erro de auth
   useEffect(() => {
-    const handleAuthError = () => {
-      logout(); // Limpa o estado de autenticação
+    const onAuthError = () => {
+      logout();
       showModal({
         title: "Sessão Expirada",
-        message:
-          "Sua sessão expirou. Por favor, faça login novamente para continuar.",
-        onConfirm: () => {
-          /* Apenas fecha o modal, o logout já redireciona */
-        },
+        message: "Sua sessão expirou. Faça login novamente.",
+        onConfirm: () => {},
       });
     };
-
-    window.addEventListener("auth-error", handleAuthError);
-
-    // Limpa o listener quando o componente é desmontado
-    return () => {
-      window.removeEventListener("auth-error", handleAuthError);
-    };
+    window.addEventListener("auth-error", onAuthError);
+    return () => window.removeEventListener("auth-error", onAuthError);
   }, [logout, showModal]);
 
   if (loading) {
@@ -78,32 +81,34 @@ const AppContent = () => {
     );
   }
 
-  return (
-    <>
-      <QASidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
+  // se autenticado, exibe dashboard
+  if (isAuthenticated) {
+    return <Dashboard />;
+  }
 
-      <button
-        onClick={() => setIsSidebarOpen(true)}
-        className="fixed bottom-5 left-5 bg-merqado-blue text-white p-4 rounded-full shadow-lg hover:bg-merqado-blue-dark transition-transform hover:scale-110 z-30"
-        aria-label="Abrir conteúdo educacional"
-      >
-        <BookOpen className="w-6 h-6" />
-      </button>
-      <NotificationModal
-        isOpen={modalState.isOpen}
-        title={modalState.title}
-        message={modalState.message}
-        onConfirm={modalState.onConfirm}
-      />
-      {isAuthenticated ? <Dashboard /> : <LoginPage />}
-    </>
-  );
+  // Se autenticado, vai para o Dashboard completo
+  if (isAuthenticated) {
+    return <Dashboard />;
+  }
+
+  // Se não autenticado, renderiza a página de auth conforme "page"
+  const renderAuthPage = () => {
+    switch (page) {
+      case "forgotPassword":
+        return <ForgotPasswordPage setPage={setPage} />;
+      case "resetPassword":
+        return <ResetPasswordPage setPage={setPage} />;
+      case "login":
+      default:
+        return <LoginPage setPage={setPage} />;
+    }
+  };
+
+  return <>{renderAuthPage()}</>;
 };
 // Componente que renderiza a aplicação quando o usuário está autenticado
 const Dashboard = () => {
+  const { isAuthenticated } = useAuth();
   const [page, setPage] = useState("home");
   const [searchResults, setSearchResults] = useState([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState("");
@@ -205,6 +210,10 @@ const Dashboard = () => {
         );
       case "offers":
         return <OffersPage onProductSelect={handleSelectProduct} />;
+      case "forgotPassword":
+        return <ForgotPasswordPage setPage={setPage} />;
+      case "resetPassword":
+        return <ResetPasswordPage setPage={setPage} />;
       default:
         return (
           <HomePage
