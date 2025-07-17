@@ -1,6 +1,25 @@
+/*
+================================================================================
+ARQUIVO: src/routes/favoritesRoutes.js (ATUALIZADO)
+================================================================================
+*/
 const express_fav = require("express");
 const router_fav = express_fav.Router();
 const favoritesController = require("../controllers/favoritesController");
+
+// Middleware para responder a métodos não permitidos e incluir header Allow
+const methodNotAllowed = (req, res) => {
+  const allowedMethods = req.route.stack
+    .filter((layer) => layer.method)
+    .map((layer) => layer.method.toUpperCase());
+  res.set("Allow", allowedMethods.join(", "));
+  return res.status(405).json({
+    error: {
+      code: "METHOD_NOT_ALLOWED",
+      message: "O método HTTP utilizado não é permitido para esta rota.",
+    },
+  });
+};
 
 /**
  * @swagger
@@ -36,7 +55,13 @@ const favoritesController = require("../controllers/favoritesController");
  *         description: Adicionado aos favoritos
  *       401:
  *         description: Não autorizado
+ *       405:
+ *         description: Método não permitido
  */
-router_fav.post("/toggle", favoritesController.toggleFavorite);
+router_fav
+  .route("/toggle")
+  .options((req, res) => res.set("Allow", "POST,OPTIONS").sendStatus(204))
+  .post(favoritesController.toggleFavorite)
+  .all(methodNotAllowed);
 
 module.exports = router_fav;

@@ -1,14 +1,30 @@
-### O que é Teste de Software?
+## 🧰 O que é Teste de Software?
 
-Teste de Software é um processo de investigação conduzido para fornecer informações sobre a qualidade do produto ou serviço sob teste. É uma atividade crítica no ciclo de vida de desenvolvimento de software que ajuda a identificar defeitos, garantir que o software atende aos requisitos e, em última análise, fornecer um produto de alta qualidade aos utilizadores finais.
+Teste de software é um **conjunto estruturado de atividades** que visa descobrir defeitos e avaliar a qualidade de produtos de software (objetos de teste), com ou sem execução do código. Os testes podem ser:
+
+- **Estáticos**: como revisões e análise de código (sem execução);
+- **Dinâmicos**: com execução do sistema e observação dos resultados.
+
+Mais do que executar testes, testar inclui atividades como:
+
+- Planejamento e gestão de testes;
+- Análise e projeto de testes;
+- Execução e avaliação dos resultados;
+- Comunicação eficaz com stakeholders.
+
+Além de verificar se os requisitos foram atendidos (verificação), o teste também valida se o sistema **atende às expectativas e necessidades reais** dos usuários (validação).
+
+Segundo o _ISTQB CTFL 4.0_:
+
+> "Teste de software é um processo baseado em objetivos, usado para obter informações sobre a qualidade de um produto."
 
 ---
 
-#### Objetivos Principais:
+### 📚 Referências Técnicas
 
-- **Encontrar Defeitos:** O objetivo mais comum é encontrar bugs (erros, falhas) para que possam ser corrigidos antes que o software chegue ao utilizador.
-- **Garantir a Qualidade:** Verificar se o software funciona conforme o esperado e se atende a todos os requisitos funcionais e não funcionais (como performance e segurança).
-- **Aumentar a Confiança:** Fornecer à equipa e aos stakeholders a confiança de que o software está pronto para ser lançado.
-- **Prevenir Defeitos:** O processo de pensar em como testar um software pode ajudar os programadores a escrever um código melhor e a evitar bugs desde o início.
-
-Neste e-commerce, cada funcionalidade, desde o login de utilizador até à finalização de uma compra, passou por múltiplos ciclos de teste para garantir a sua estabilidade e segurança.
+- _CTFL 4.0 – Certified Tester Foundation Level_, Cap. 1
+- _Lessons Learned in Software Testing_ – Cem Kaner, James Bach, Bret Pettichord
+- _Explore It_ – Elisabeth Hendrickson
+- _Rapid Software Testing_ – James Bach & Michael Bolton
+- James Bach – [Testing is](https://developsense.com/blog/2014/10/testing-is)
+- James Bach – [Testing vs. Checking](https://developsense.com/blog/2009/08/testing-vs-checking)

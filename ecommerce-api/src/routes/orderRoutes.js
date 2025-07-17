@@ -1,6 +1,20 @@
+/*
+================================================================================
+ARQUIVO: src/routes/orderRoutes.js (ATUALIZADO E CORRIGIDO)
+================================================================================
+*/
 const express = require("express");
 const router = express.Router();
 const orderController = require("../controllers/orderController");
+
+// Middleware para responder a métodos não permitidos
+const methodNotAllowed = (req, res) =>
+  res.status(405).json({
+    error: {
+      code: "METHOD_NOT_ALLOWED",
+      message: "O método HTTP utilizado não é permitido para esta rota.",
+    },
+  });
 
 /**
  * @swagger
@@ -22,8 +36,9 @@ const orderController = require("../controllers/orderController");
  *         description: Lista de pedidos retornada com sucesso.
  *       401:
  *         description: Não autorizado.
+ *       405:
+ *         description: Método não permitido.
  */
-router.get("/", orderController.getOrders);
 
 /**
  * @swagger
@@ -64,7 +79,7 @@ router.get("/", orderController.getOrders);
  *                       example: 12500.00
  *               paymentMethod:
  *                 type: string
- *                 example: credit_card
+ *                 example: "credit_card"
  *               shippingAddress:
  *                 type: object
  *                 required:
@@ -96,7 +111,13 @@ router.get("/", orderController.getOrders);
  *         description: Dados do pedido incompletos.
  *       401:
  *         description: Não autorizado.
+ *       405:
+ *         description: Método não permitido.
  */
-router.post("/", orderController.createOrder);
+router
+  .route("/")
+  .get(orderController.getOrders)
+  .post(orderController.createOrder)
+  .all(methodNotAllowed);
 
 module.exports = router;

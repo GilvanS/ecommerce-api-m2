@@ -1,6 +1,7 @@
 const db = require("../config/database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { logAudit } = require("../utils/logger");
 
 const register = async (req, res) => {
   const { name, age, city, state, username, password } = req.body;
@@ -104,6 +105,12 @@ const updateUserRole = async (req, res) => {
   }
   try {
     await db.query("UPDATE users SET role = ? WHERE id = ?", [role, id]);
+    logAudit({
+      actorId: req.user.id,
+      actorName: req.user.username,
+      action: "USER_ROLE_UPDATED",
+      details: { targetUserId: id, newRole: role },
+    });
     res
       .status(200)
       .json({ message: "Papel do usuário atualizado com sucesso!" });
@@ -131,6 +138,12 @@ const deleteUser = async (req, res) => {
     }
     await db.query("DELETE FROM favorites WHERE user_id = ?", [id]); // Limpa favoritos primeiro
     await db.query("DELETE FROM users WHERE id = ?", [id]);
+    logAudit({
+      actorId: req.user.id,
+      actorName: req.user.username,
+      action: "USER_DELETED",
+      details: { targetUserId: id },
+    });
     res.status(200).json({ message: "Usuário excluído com sucesso!" });
   } catch (error) {
     res.status(500).json({ message: "Erro ao excluir usuário." });
@@ -174,6 +187,12 @@ const changePassword = async (req, res) => {
       hashedNewPassword,
       userId,
     ]);
+    logAudit({
+      actorId: req.user.id,
+      actorName: req.user.username,
+      action: "USER_PASSWORD_CHANGED",
+      details: { userId: req.user.id },
+    });
 
     res.status(200).json({ message: "Senha alterada com sucesso." });
   } catch (error) {
@@ -181,12 +200,19 @@ const changePassword = async (req, res) => {
     res.status(500).json({ message: "Erro interno do servidor." });
   }
 };
-const resetPasswordByAdmin = async (req, res) => {
+resetPasswordByAdmin = async (req, res) => {
   const { userId } = req.params;
   const { newPassword } = req.body;
 
-  if (!newPassword) {
-    return res.status(400).json({ message: "A nova senha é obrigatória." });
+  // CORREÇÃO: Aplica a validação de senha forte
+  if (!newPassword || !isPasswordStrong(newPassword)) {
+    return res.status(400).json({
+      error: {
+        code: "WEAK_PASSWORD",
+        message:
+          "A nova senha é obrigatória e deve atender aos critérios de segurança.",
+      },
+    });
   }
 
   try {
@@ -197,7 +223,6 @@ const resetPasswordByAdmin = async (req, res) => {
     if (targetUsers.length === 0) {
       return res.status(404).json({ message: "Usuário alvo não encontrado." });
     }
-    // Impede que um admin redefina a senha de outro admin
     if (targetUsers[0].role === "admin") {
       return res.status(403).json({
         message: "Não é permitido redefinir a senha de outro administrador.",
@@ -205,13 +230,18 @@ const resetPasswordByAdmin = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     await db.query("UPDATE users SET password = ? WHERE id = ?", [
-      hashedNewPassword,
+      hashedPassword,
       userId,
     ]);
-
+    logAudit({
+      actorId: req.user.id,
+      actorName: req.user.username,
+      action: "ADMIN_PASSWORD_RESET",
+      details: { targetUserId: req.params.userId },
+    });
     res.status(200).json({
       message: "Senha do usuário redefinida com sucesso pelo administrador.",
     });

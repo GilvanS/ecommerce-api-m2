@@ -6,6 +6,11 @@
     "topics": [
       {
         "id": "topic-1-1",
+        "title": "O que é Testar?",
+        "file": "fundamentals/3-what-is-test.md"
+      },
+      {
+        "id": "topic-1-1",
         "title": "O que é Teste de Software?",
         "file": "fundamentals/1-what-is-testing.md"
       },
@@ -30,6 +35,21 @@
         "id": "topic-2-2",
         "title": "Análise de Valor Limite",
         "file": "techniques/2-boundary-value-analysis.md"
+      },
+      {
+        "id": "topic-2-3",
+        "title": "Testes Exploratórios",
+        "file": "techniques/3-exploratory-testing.md"
+      },
+      {
+        "id": "topic-2-4",
+        "title": "Tabela de Decisão",
+        "file": "techniques/4-decision-table.md"
+      },
+      {
+        "id": "topic-2-5",
+        "title": "Outros",
+        "file": "techniques/5-others.md"
       }
     ]
   },
@@ -40,8 +60,8 @@
     "topics": [
       {
         "id": "challenge-3-1",
-        "title": "Validar o Login com Dados Inválidos",
-        "file": "challenges/1-invalid-login.md",
+        "title": "Condições de Testes da API",
+        "file": "challenges/1-api-testing.md",
         "action": {
           "label": "Testar Agora",
           "page": "login"
@@ -49,12 +69,33 @@
       },
       {
         "id": "challenge-3-2",
-        "title": "Testar o Fluxo de Compra",
-        "file": "challenges/2-purchase-flow.md",
+        "title": "Condições de Testes da WEB",
+        "file": "challenges/2-web-testing.md",
         "action": {
           "label": "Ir para a Loja",
           "page": "home"
         }
+      },
+      {
+        "id": "challenge-3-3",
+        "title": "Automação WEB e API",
+        "file": "challenges/3-automation.md",
+        "action": {
+          "label": "Ir para a Loja",
+          "page": "home"
+        }
+      }
+    ]
+  },
+  {
+    "id": "module-4",
+    "title": "Documentações",
+    "icon": "BookOpen",
+    "topics": [
+      {
+        "id": "topic-1-1",
+        "title": "Swagger e GraphQL",
+        "file": "documentation/1-swagger-graphql.md"
       }
     ]
   }

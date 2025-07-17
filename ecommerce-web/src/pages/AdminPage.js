@@ -12,6 +12,8 @@ import { Spinner } from "../components/ui/Spinner";
 import { Input } from "../components/ui/Input";
 import { formatCurrency } from "../utils/formatters";
 import { Pagination } from "../components/ui/Pagination";
+import { DoughnutChart } from "../components/admin/DoughnutChart";
+import { BarChart } from "../components/admin/BarChart";
 
 // Importando Ícones
 import {
@@ -409,12 +411,13 @@ const ResetPasswordModal = ({ user, onClose, onSave }) => {
 };
 export const AdminPage = () => {
   const { userProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
 
   const [pagination, setPagination] = useState({
     products: { currentPage: 1, totalPages: 1 },
@@ -434,53 +437,47 @@ export const AdminPage = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const query = `
-                query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
-                    products(page: $productsPage, limit: 15) {
-                        products { id name price discount_price stock category_id is_new is_trending description imageUrl }
-                        totalPages
+      if (activeTab === "dashboard") {
+        const { data } = await apiClient.get("/audit/summary");
+        setDashboardData(data);
+      } else {
+        const query = `
+                    query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
+                        products(page: $productsPage, limit: 15) { products { id name price stock category_id description imageUrl }, totalPages }
+                        categories(page: $categoriesPage, limit: 15) { categories { id name image_url }, totalPages }
+                        users(page: $usersPage, limit: 15) { users { id name username role }, totalPages }
                     }
-                    categories(page: $categoriesPage, limit: 15) {
-                        categories { id name image_url }
-                        totalPages
-                    }
-                    users(page: $usersPage, limit: 15) {
-                        users { id name username role }
-                        totalPages
-                    }
-                }
-            `;
-      const variables = {
-        productsPage: pagination.products.currentPage,
-        categoriesPage: pagination.categories.currentPage,
-        usersPage: pagination.users.currentPage,
-      };
-
-      const data = await graphqlClient(query, variables);
-
-      if (data.products) {
-        setProducts(data.products.products || []);
-        setPagination((p) => ({
-          ...p,
-          products: { ...p.products, totalPages: data.products.totalPages },
-        }));
-      }
-      if (data.categories) {
-        setCategories(data.categories.categories || []);
-        setPagination((p) => ({
-          ...p,
-          categories: {
-            ...p.categories,
-            totalPages: data.categories.totalPages,
-          },
-        }));
-      }
-      if (data.users) {
-        setUsers(data.users.users || []);
-        setPagination((p) => ({
-          ...p,
-          users: { ...p.users, totalPages: data.users.totalPages },
-        }));
+                `;
+        const variables = {
+          productsPage: pagination.products.currentPage,
+          categoriesPage: pagination.categories.currentPage,
+          usersPage: pagination.users.currentPage,
+        };
+        const data = await graphqlClient(query, variables);
+        if (data.products) {
+          setProducts(data.products.products || []);
+          setPagination((p) => ({
+            ...p,
+            products: { ...p.products, totalPages: data.products.totalPages },
+          }));
+        }
+        if (data.categories) {
+          setCategories(data.categories.categories || []);
+          setPagination((p) => ({
+            ...p,
+            categories: {
+              ...p.categories,
+              totalPages: data.categories.totalPages,
+            },
+          }));
+        }
+        if (data.users) {
+          setUsers(data.users.users || []);
+          setPagination((p) => ({
+            ...p,
+            users: { ...p.users, totalPages: data.users.totalPages },
+          }));
+        }
       }
     } catch (error) {
       console.error("Erro ao buscar dados para o painel de admin:", error);
@@ -488,6 +485,7 @@ export const AdminPage = () => {
       setLoading(false);
     }
   }, [
+    activeTab,
     pagination.products.currentPage,
     pagination.categories.currentPage,
     pagination.users.currentPage,
@@ -646,7 +644,7 @@ export const AdminPage = () => {
           <Shield className="w-8 h-8" />
           Painel do Administrador
         </h1>
-        {activeTab !== "users" && (
+        {activeTab !== "users" && activeTab !== "dashboard" && (
           <button
             onClick={
               activeTab === "products" ? handleAddProduct : handleAddCategory
@@ -664,33 +662,22 @@ export const AdminPage = () => {
       <div className="mb-4 border-b border-gray-200">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
-            onClick={() => setActiveTab("products")}
+            onClick={() => setActiveTab("dashboard")}
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === "products"
+              activeTab === "dashboard"
                 ? "border-merqado-blue text-merqado-blue"
                 : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
+            Dashboard
+          </button>
+          <button onClick={() => setActiveTab("products")} className={`...`}>
             Gerenciar Produtos
           </button>
-          <button
-            onClick={() => setActiveTab("categories")}
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === "categories"
-                ? "border-merqado-blue text-merqado-blue"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
+          <button onClick={() => setActiveTab("categories")} className={`...`}>
             Gerenciar Categorias
           </button>
-          <button
-            onClick={() => setActiveTab("users")}
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === "users"
-                ? "border-merqado-blue text-merqado-blue"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
+          <button onClick={() => setActiveTab("users")} className={`...`}>
             Gerenciar Usuários
           </button>
         </nav>
@@ -702,6 +689,21 @@ export const AdminPage = () => {
         </div>
       ) : (
         <>
+          <div className={activeTab === "dashboard" ? "" : "hidden"}>
+            {dashboardData ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                  <DoughnutChart chartData={dashboardData.actionsByType} />
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-md">
+                  <BarChart chartData={dashboardData.activityByDay} />
+                </div>
+              </div>
+            ) : (
+              <p>Não há dados de auditoria para exibir.</p>
+            )}
+          </div>
+
           <div className={activeTab === "products" ? "" : "hidden"}>
             <div className="bg-white rounded-xl shadow-md overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">

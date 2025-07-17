@@ -1,13 +1,63 @@
-### Técnica: Partição de Equivalência
+## 🌐 Partição de Equivalência (Equivalence Partitioning)
 
-A Partição de Equivalência é uma técnica de teste de "caixa-preta" que envolve dividir os dados de entrada de uma aplicação em "partições" ou grupos de dados que se espera que sejam processados da mesma forma. Em vez de testar cada valor de entrada possível, você testa apenas um valor representativo de cada partição.
+---
 
-**Exemplo Prático no Nosso E-commerce:**
+### 🔍 Conceito
 
-Imagine um campo de "Idade" no formulário de registo que só aceita utilizadores entre 18 e 99 anos.
+A Partição de Equivalência é uma técnica de projeto de testes que consiste em dividir o espaço de entradas de um sistema em conjuntos de dados (partições) que são tratados de forma equivalente pelo sistema.
 
-- **Partição Válida:** Qualquer número entre 18 e 99 (ex: 25, 50, 80).
-- **Partição Inválida (menor):** Qualquer número menor que 18 (ex: 17, 0, -5).
-- **Partição Inválida (maior):** Qualquer número maior que 99 (ex: 100, 150).
+> "Se um teste passar para um valor de uma partilhão, assume-se que todos os outros valores da mesma partilhão produzirão o mesmo resultado."  
+> — _ISTQB CTFL 4.0_
 
-Em vez de testar todas as idades de 0 a 200, você testaria apenas um valor de cada partição (por exemplo, 25, 17 e 100) para verificar se o sistema se comporta como esperado para cada grupo.
+---
+
+### 🔮 Como Utilizar
+
+1. Identifique os domínios de entrada do sistema.
+2. Separe os valores de entrada em:
+   - Partições Válidas (dados esperados e aceitos pelo sistema)
+   - Partições Inválidas (dados fora do esperado, devem ser rejeitados)
+3. Escolha pelo menos um valor representativo para cada partilhão.
+
+---
+
+### 💡 Exemplo Prático
+
+**Campo:** Idade permitida entre 18 e 99
+
+- Partição Válida: `18 a 99`  
+  Exemplo de valor: `30` → Esperado: Aceitar
+
+- Partição Inválida A: `<18`  
+  Exemplo de valor: `15` → Esperado: Rejeitar
+
+- Partição Inválida B: `>99`  
+  Exemplo de valor: `120` → Esperado: Rejeitar
+
+- Partição Inválida C: não numérica  
+  Exemplo de valor: `"abc"` → Esperado: Rejeitar
+
+---
+
+### 🚀 Quando Aplicar
+
+- Validações numéricas
+- Validação de formatos (e-mail, CPF, etc.)
+- Campos com domínios fixos (ex: sexo = M/F/O)
+
+---
+
+### 📊 Benefícios
+
+- Redução de redundância de testes
+- Cobertura eficiente do comportamento
+- Facilidade de aplicação em testes manuais e automatizados
+
+---
+
+### 📚 Referências
+
+- _CTFL 4.0_ – Cap. 4.2.1
+- _O Princípio da Caixa-Preta_ – Matthew S.
+- _Code Complete_ – Cap. 11, Steve McConnell
+- _Agile Testing_ – Crispin & Gregory

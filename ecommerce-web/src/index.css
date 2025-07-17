@@ -38,3 +38,12 @@ body {
   /* Texto escuro para contraste */
   color: #333333;
 }
+.prose-invert ul {
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+.prose-invert h2,
+.prose-invert h3 {
+  font-weight: 600;
+  margin-top: 1rem;
+}

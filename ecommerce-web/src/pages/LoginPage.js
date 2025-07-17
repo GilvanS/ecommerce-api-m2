@@ -10,12 +10,9 @@ import { Input } from "../../src/components/ui/Input";
 import { Logo } from "../../src/components/shared/Logo";
 import { PasswordStrengthIndicator } from "../../src/components/shared/PasswordStrengthIndicator";
 import poweredByLogo from "../../src/assets/img/logo-chris.svg";
-import { QASidebar } from "../components/academy/QASidebar"; // NOVO
-import { BookOpen } from "../components/shared/Icons"; // NOVO
 
 export const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // NOVO: Estado para controlar a sidebar
   const { login, register, loading } = useAuth();
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState("");
@@ -77,126 +74,113 @@ export const LoginPage = () => {
   };
 
   return (
-    <>
-      <QASidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
-      <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-          <div className="space-y-6">
-            <div className="flex justify-center">
-              <Logo size="lg" />
-            </div>
-            <h2 className="text-center text-3xl font-extrabold text-slate-800">
-              {isLogin ? "Bem-vindo de volta!" : "Crie sua conta"}
-            </h2>
-            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-              {!isLogin && (
-                <>
-                  <Input
-                    name="name"
-                    value={values.name}
-                    onChange={handleInputChange}
-                    placeholder="Nome Completo"
-                    error={errors.name}
-                  />
-                  <div className="flex space-x-4">
-                    <Input
-                      name="age"
-                      type="number"
-                      value={values.age}
-                      onChange={handleInputChange}
-                      placeholder="Idade"
-                      error={errors.age}
-                    />
-                    <Input
-                      name="city"
-                      value={values.city}
-                      onChange={handleInputChange}
-                      placeholder="Cidade"
-                      error={errors.city}
-                    />
-                  </div>
-                  <Input
-                    name="state"
-                    value={values.state}
-                    onChange={handleInputChange}
-                    placeholder="Estado"
-                    error={errors.state}
-                    maxLength="15"
-                  />
-                  <hr />
-                </>
-              )}
-              <Input
-                name="username"
-                value={values.username}
-                onChange={handleInputChange}
-                placeholder="Usuário"
-                error={errors.username}
-              />
-              <Input
-                name="password"
-                type="password"
-                value={values.password}
-                onChange={handleInputChange}
-                placeholder="Senha"
-                error={errors.password}
-              />
-              {!isLogin && (
-                <PasswordStrengthIndicator password={values.password} />
-              )}
-
-              {formError && (
-                <p className="text-sm text-red-600 text-center">{formError}</p>
-              )}
-              {success && (
-                <p className="text-sm text-green-600 text-center">{success}</p>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-3 px-4 rounded-md shadow-sm font-medium text-white bg-merqado-orange hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light"
-              >
-                {loading ? (
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                ) : isLogin ? (
-                  "Entrar"
-                ) : (
-                  "Registrar"
-                )}
-              </button>
-            </form>
-            <p className="text-center text-sm text-slate-600">
-              {isLogin ? "Não tem uma conta?" : "Já tem uma conta?"}
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setFormError("");
-                  setSuccess("");
-                  setValues(initialValues);
-                }}
-                className="font-medium text-merqado-orange hover:text-merqado-orange-dark ml-1"
-              >
-                {isLogin ? "Registre-se" : "Faça login"}
-              </button>
-            </p>
+    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+        <div className="space-y-6">
+          <div className="flex justify-center">
+            <Logo size="lg" />
           </div>
-        </div>
-        <div className="mt-8 flex flex-col items-center space-y-2">
-          <p className="text-xs text-slate-400">Powered by</p>
-          <img src={poweredByLogo} alt="Chris" className="h-6 w-auto" />
+          <h2 className="text-center text-3xl font-extrabold text-slate-800">
+            {isLogin ? "Bem-vindo de volta!" : "Crie sua conta"}
+          </h2>
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            {!isLogin && (
+              <>
+                <Input
+                  name="name"
+                  value={values.name}
+                  onChange={handleInputChange}
+                  placeholder="Nome Completo"
+                  error={errors.name}
+                />
+                <div className="flex space-x-4">
+                  <Input
+                    name="age"
+                    type="number"
+                    value={values.age}
+                    onChange={handleInputChange}
+                    placeholder="Idade"
+                    error={errors.age}
+                  />
+                  <Input
+                    name="city"
+                    value={values.city}
+                    onChange={handleInputChange}
+                    placeholder="Cidade"
+                    error={errors.city}
+                  />
+                </div>
+                <Input
+                  name="state"
+                  value={values.state}
+                  onChange={handleInputChange}
+                  placeholder="Estado"
+                  error={errors.state}
+                  maxLength="15"
+                />
+                <hr />
+              </>
+            )}
+            <Input
+              name="username"
+              value={values.username}
+              onChange={handleInputChange}
+              placeholder="Usuário"
+              error={errors.username}
+            />
+            <Input
+              name="password"
+              type="password"
+              value={values.password}
+              onChange={handleInputChange}
+              placeholder="Senha"
+              error={errors.password}
+            />
+            {!isLogin && (
+              <PasswordStrengthIndicator password={values.password} />
+            )}
+
+            {formError && (
+              <p className="text-sm text-red-600 text-center">{formError}</p>
+            )}
+            {success && (
+              <p className="text-sm text-green-600 text-center">{success}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex justify-center py-3 px-4 rounded-md shadow-sm font-medium text-white bg-merqado-orange hover:bg-merqado-orange-dark disabled:bg-merqado-orange-light"
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              ) : isLogin ? (
+                "Entrar"
+              ) : (
+                "Registrar"
+              )}
+            </button>
+          </form>
+          <p className="text-center text-sm text-slate-600">
+            {isLogin ? "Não tem uma conta?" : "Já tem uma conta?"}
+            <button
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setFormError("");
+                setSuccess("");
+                setValues(initialValues);
+              }}
+              className="font-medium text-merqado-orange hover:text-merqado-orange-dark ml-1"
+            >
+              {isLogin ? "Registre-se" : "Faça login"}
+            </button>
+          </p>
         </div>
       </div>
-      <button
-        onClick={() => setIsSidebarOpen(true)}
-        className="fixed bottom-5 left-5 bg-merqado-blue text-white p-4 rounded-full shadow-lg hover:bg-merqado-blue-dark transition-transform hover:scale-110"
-        aria-label="Abrir conteúdo educacional"
-      >
-        <BookOpen className="w-6 h-6" />
-      </button>
-    </>
+      <div className="mt-8 flex flex-col items-center space-y-2">
+        <p className="text-xs text-slate-400">Powered by</p>
+        <img src={poweredByLogo} alt="Chris" className="h-6 w-auto" />
+      </div>
+    </div>
   );
 };

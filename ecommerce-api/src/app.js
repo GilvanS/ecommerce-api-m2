@@ -6,6 +6,7 @@ const favoritesRoutes = require("./routes/favoritesRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const auditRoutes = require("./routes/auditRoutes");
 const {
   authMiddleware,
   adminMiddleware,
@@ -87,6 +88,7 @@ app_main.use(
   adminMiddleware,
   categoryRoutes
 );
+app_main.use("/api/audit", authMiddleware, adminMiddleware, auditRoutes);
 
 module.exports = app_main;
 

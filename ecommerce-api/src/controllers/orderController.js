@@ -12,11 +12,41 @@ exports.createOrder = async (req, res) => {
   if (
     !userId ||
     !cart ||
+    !Array.isArray(cart) ||
     cart.length === 0 ||
     !paymentMethod ||
     !shippingAddress
   ) {
-    return res.status(400).json({ message: "Dados do pedido incompletos." });
+    return res
+      .status(400)
+      .json({
+        error: {
+          code: "INVALID_ORDER_DATA",
+          message: "Dados do pedido inválidos ou incompletos.",
+        },
+      });
+  }
+
+  // CORREÇÃO: Validação de tipos de dados mais flexível
+  for (const item of cart) {
+    const isInvalid =
+      isNaN(parseInt(item.id)) ||
+      isNaN(parseInt(item.quantity)) ||
+      isNaN(parseFloat(item.price)) ||
+      item.quantity <= 0;
+
+    if (isInvalid) {
+      return res
+        .status(400)
+        .json({
+          error: {
+            code: "INVALID_CART_ITEM",
+            message: `Item do carrinho inválido: ${
+              item.name || "ID " + item.id
+            }`,
+          },
+        });
+    }
   }
 
   const connection = await db.getConnection();
@@ -41,7 +71,7 @@ exports.createOrder = async (req, res) => {
       }
     }
 
-    // CORREÇÃO: O cálculo do total agora considera o preço com desconto
+    // 2. Criar o registro do pedido
     const totalPrice = cart.reduce((total, item) => {
       const priceToUse =
         item.discount_price && parseFloat(item.discount_price) > 0
@@ -65,7 +95,7 @@ exports.createOrder = async (req, res) => {
     ]);
     const orderId = orderResult.insertId;
 
-    // Inserir os itens do pedido, usando o preço que foi pago
+    // 3. Inserir os itens do pedido
     const orderItemsSql =
       "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ?";
     const orderItemsValues = cart.map((item) => {
@@ -73,11 +103,16 @@ exports.createOrder = async (req, res) => {
         item.discount_price && parseFloat(item.discount_price) > 0
           ? item.discount_price
           : item.price;
-      return [orderId, item.id, item.quantity, priceToUse];
+      return [
+        orderId,
+        parseInt(item.id),
+        item.quantity,
+        parseFloat(priceToUse),
+      ];
     });
     await connection.query(orderItemsSql, [orderItemsValues]);
 
-    // Atualizar o estoque para cada produto
+    // 4. Atualizar o estoque para cada produto
     for (const item of cart) {
       await connection.query(
         "UPDATE products SET stock = stock - ? WHERE id = ?",

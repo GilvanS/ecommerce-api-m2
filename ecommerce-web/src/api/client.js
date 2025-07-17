@@ -12,17 +12,20 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// --- Interceptor de Resposta ---
-// Lida com erros de autenticação de forma global disparando um evento customizado.
+// --- Interceptor de Resposta (ATUALIZADO) ---
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    const { config, response } = error;
     const needsReauthentication =
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403);
+      response && (response.status === 401 || response.status === 403);
+
+    // CORREÇÃO: Não interceta erros na rota de login. Deixa a página de login tratar.
+    if (config.url.endsWith("/users/login")) {
+      return Promise.reject(error);
+    }
 
     if (needsReauthentication) {
-      // Dispara um evento customizado que o front-end pode ouvir
       window.dispatchEvent(new CustomEvent("auth-error"));
     }
 

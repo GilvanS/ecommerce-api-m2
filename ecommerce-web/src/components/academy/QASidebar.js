@@ -93,7 +93,7 @@ export const QASidebar = ({ isOpen, onClose }) => {
               {contentLoading ? (
                 <Spinner />
               ) : (
-                <div className="prose prose-invert">
+                <div className="prose prose-invert max-w-none space-y-4 text-sm leading-relaxed">
                   <ReactMarkdown children={topicContent} />
                 </div>
               )}

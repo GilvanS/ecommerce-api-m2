@@ -1,17 +1,27 @@
-### Por que Testar?
+## 🎯 Pra que Testar?
 
-Testar software é como fazer o controlo de qualidade de um carro antes de ele sair da fábrica. Ignorar esta etapa pode levar a consequências que vão desde pequenas inconveniências para o utilizador até falhas críticas que podem causar perdas financeiras e danos à reputação da marca.
+O teste de software tem como objetivo fundamental **avaliar a qualidade dos artefatos de software** e **reduzir o risco de falhas em operação**. Sistemas com defeitos podem causar prejuízos financeiros, comprometer a reputação de uma empresa e, em casos extremos, causar danos físicos ou morte.
+
+Objetivos típicos incluem:
+
+- Avaliar requisitos, histórias de usuário, projetos e código;
+- Detectar falhas e defeitos;
+- Garantir a cobertura necessária do objeto de teste;
+- Reduzir riscos associados à má qualidade do software;
+- Verificar conformidade com requisitos especificados, legais e contratuais;
+- Fornecer informações objetivas para a tomada de decisões;
+- Criar confiança na qualidade do sistema;
+- Validar se o sistema atende às necessidades dos stakeholders.
+
+Os objetivos variam de acordo com o contexto do projeto, riscos associados, nível de teste e fatores de negócio (como estrutura organizacional ou time-to-market).
 
 ---
 
-#### Benefícios Chave:
+### 📚 Referências Técnicas
 
-1.  **Redução de Custos:** Encontrar e corrigir um bug no início do desenvolvimento é exponencialmente mais barato do que corrigi-lo após o lançamento, quando já pode ter afetado milhares de utilizadores.
-
-2.  **Segurança:** Em um e-commerce, os testes são vitais para garantir que os dados dos utilizadores (informações pessoais, dados de pagamento) estão seguros contra vulnerabilidades e ataques.
-
-3.  **Satisfação do Cliente:** Uma aplicação que funciona bem, é rápida e intuitiva gera uma experiência positiva, o que leva à satisfação e fidelização do cliente. Bugs e crashes fazem o oposto.
-
-4.  **Qualidade do Produto:** Testes rigorosos garantem que todas as funcionalidades, como adicionar um produto ao carrinho, aplicar um desconto ou processar um pagamento, funcionem perfeitamente, resultando num produto final de alta qualidade.
-
-Ao explorar este e-commerce, pense em como um pequeno bug no cálculo do total do carrinho poderia impactar a confiança de um cliente. É por isso que testamos.
+- _CTFL 4.0 – Certified Tester Foundation Level_, Cap. 1
+- _Lessons Learned in Software Testing_ – Cem Kaner, James Bach, Bret Pettichord
+- _Explore It_ – Elisabeth Hendrickson
+- _Rapid Software Testing_ – James Bach & Michael Bolton
+- James Bach – [Testing is](https://developsense.com/blog/2014/10/testing-is)
+- James Bach – [Testing vs. Checking](https://developsense.com/blog/2009/08/testing-vs-checking)

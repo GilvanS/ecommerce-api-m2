@@ -1,3 +1,8 @@
+/*
+================================================================================
+ARQUIVO: src/routes/productRoutes.js (ATUALIZADO)
+================================================================================
+*/
 const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
@@ -6,13 +11,38 @@ const {
   adminMiddleware,
 } = require("../middleware/authMiddleware");
 
+// Middleware para responder a métodos não permitidos e incluir header Allow
+const methodNotAllowed = (req, res) => {
+  const allowedMethods = req.route.stack
+    .filter((layer) => layer.method)
+    .map((layer) => layer.method.toUpperCase());
+  res.set("Allow", allowedMethods.join(", "));
+  return res.status(405).json({
+    error: {
+      code: "METHOD_NOT_ALLOWED",
+      message: "O método HTTP utilizado não é permitido para esta rota.",
+    },
+  });
+};
+
 /**
  * @swagger
- * tags:
- *   - name: Products
- *     description: Operações de gerenciamento de produtos (requerem privilégios de admin)
+ * /api/products:
+ *   get:
+ *     tags: [Products]
+ *     summary: Retorna todos os produtos
+ *     responses:
+ *       200:
+ *         description: Lista de produtos retornada com sucesso
+ *       405:
+ *         description: Método não permitido
  */
-router.get("/", productController.getProducts);
+router
+  .route("/")
+  .options((req, res) => res.set("Allow", "GET,POST,OPTIONS").sendStatus(204))
+  .get(productController.getProducts)
+  .all(methodNotAllowed);
+
 /**
  * @swagger
  * /api/products:
@@ -45,14 +75,14 @@ router.get("/", productController.getProducts);
  *         description: Produto criado com sucesso
  *       403:
  *         description: Acesso negado (não é admin)
+ *       405:
+ *         description: Método não permitido
  */
-
-router.post(
-  "/",
-  authMiddleware,
-  adminMiddleware,
-  productController.createProduct
-);
+router
+  .route("/")
+  .options((req, res) => res.set("Allow", "GET,POST,OPTIONS").sendStatus(204))
+  .post(authMiddleware, adminMiddleware, productController.createProduct)
+  .all(methodNotAllowed);
 
 /**
  * @swagger
@@ -92,13 +122,14 @@ router.post(
  *         description: Produto atualizado com sucesso
  *       403:
  *         description: Acesso negado (não é admin)
+ *       405:
+ *         description: Método não permitido
  */
-router.put(
-  "/:id",
-  authMiddleware,
-  adminMiddleware,
-  productController.updateProduct
-);
+router
+  .route("/:id")
+  .options((req, res) => res.set("Allow", "PUT,DELETE,OPTIONS").sendStatus(204))
+  .put(authMiddleware, adminMiddleware, productController.updateProduct)
+  .all(methodNotAllowed);
 
 /**
  * @swagger
@@ -119,12 +150,13 @@ router.put(
  *         description: Produto excluído com sucesso
  *       403:
  *         description: Acesso negado (não é admin)
+ *       405:
+ *         description: Método não permitido
  */
-router.delete(
-  "/:id",
-  authMiddleware,
-  adminMiddleware,
-  productController.deleteProduct
-);
+router
+  .route("/:id")
+  .options((req, res) => res.set("Allow", "PUT,DELETE,OPTIONS").sendStatus(204))
+  .delete(authMiddleware, adminMiddleware, productController.deleteProduct)
+  .all(methodNotAllowed);
 
 module.exports = router;

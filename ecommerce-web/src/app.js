@@ -13,6 +13,7 @@ import {
   useNotification,
 } from "./context/NotificationContext";
 import { ToastProvider } from "./context/ToastContext";
+import { QASidebar } from "./components/academy/QASidebar";
 
 // Importando Páginas
 import { HomePage } from "./pages/HomePage";
@@ -29,6 +30,7 @@ import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
 import { OffersPage } from "./pages/OffersPage";
+import { BookOpen } from "./components/shared/Icons";
 
 // Importando Componentes de Layout e UI
 import { Header } from "./components/layout/Header";
@@ -44,6 +46,7 @@ import { graphqlClient } from "./api/client";
 const AppContent = () => {
   const { isAuthenticated, loading, logout } = useAuth();
   const { showModal, modalState } = useNotification();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Configura o listener de eventos para erros de autenticação
   useEffect(() => {
@@ -77,6 +80,18 @@ const AppContent = () => {
 
   return (
     <>
+      <QASidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+
+      <button
+        onClick={() => setIsSidebarOpen(true)}
+        className="fixed bottom-5 left-5 bg-merqado-blue text-white p-4 rounded-full shadow-lg hover:bg-merqado-blue-dark transition-transform hover:scale-110 z-30"
+        aria-label="Abrir conteúdo educacional"
+      >
+        <BookOpen className="w-6 h-6" />
+      </button>
       <NotificationModal
         isOpen={modalState.isOpen}
         title={modalState.title}
