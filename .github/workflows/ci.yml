@@ -48,19 +48,17 @@ jobs:
 
       - name: Publicar resultados dos testes
         # Executa apenas em push para main, para não poluir o DB com execuções de PRs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push'
         run: |
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           cd ecommerce-api
           git add allure-report allure-results
           # Verifica se há algo para comitar antes de tentar
-          git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure"
+          git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure [skip ci]"
           git push
           node scripts/publish-test-results.js
 
         env:
-          # Configure estes segredos nas configurações do seu repositório no GitHub
-          # Ex: https://your-domain.com/api/internal/test-results
           TEST_RESULTS_API_URL: ${{ secrets.TEST_RESULTS_API_URL }}
           INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
