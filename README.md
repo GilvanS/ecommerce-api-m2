@@ -1,129 +1,165 @@
-# API de Carrinho de Compras para E-commerce
+<div align="center">
+  <img src="https://i.imgur.com/your-logo-image-url.png" alt="Merqado Logo" width="150"/>
+  <h1>Projeto Merqado - API & Web</h1>
+  <p>
+    <strong>Bem-vindo ao ecossistema Merqado!</strong> Este repositório contém a API robusta e a interface web moderna que compõem a nossa plataforma de e-commerce.
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+    <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
+    <img src="https://img.shields.io/badge/GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white" alt="GraphQL"/>
+    <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger"/>
+  </p>
+</div>
 
-Esta é uma API de exemplo construída com Node.js, Express, MySQL e GraphQL. Ela fornece funcionalidades RESTful e GraphQL para gerenciar um carrinho de compras e foi desenvolvida para fins de estudo, especialmente para a prática de testes de software.
+## 🚀 Jornada de Configuração: Do Clone à Execução
 
-## ✨ Funcionalidades
+Este guia irá orientá-lo em todos os passos necessários para configurar e executar o ambiente de desenvolvimento completo do Merqado na sua máquina local.
 
-- **API REST & GraphQL:** Suporte duplo para manipulação de dados.
-- **Gerenciamento de Carrinho:** Adicionar, remover, atualizar e listar itens.
-- **Documentação:** API REST documentada com Swagger (OpenAPI).
-- **Estrutura Modular:** Código organizado para fácil entendimento e manutenção.
+### Índice
 
-## 🛠️ Tecnologias Utilizadas
+- [🚀 Jornada de Configuração: Do Clone à Execução](#-jornada-de-configuração-do-clone-à-execução)
+  - [Índice](#índice)
+  - [1. 🌍 Clonando o Universo Merqado](#1--clonando-o-universo-merqado)
+  - [2. 🧩 Instalando as Peças (Dependências)](#2--instalando-as-peças-dependências)
+  - [3. 🏛️ Construindo a Fundação (Banco de Dados)](#3-️-construindo-a-fundação-banco-de-dados)
+  - [4. 🔑 Configurando os Segredos (.env)](#4--configurando-os-segredos-env)
+  - [5. 💡 Dando Vida ao Projeto (Iniciando)](#5--dando-vida-ao-projeto-iniciando)
+  - [6. 🧭 Navegando pelo Ecossistema](#6--navegando-pelo-ecossistema)
+  - [7. 👤 Acesso de Administrador](#7--acesso-de-administrador)
 
-- [Node.js](https://nodejs.org/)
-- [Express.js](https://expressjs.com/pt-br/)
-- [MySQL](https://www.mysql.com/)
-- [GraphQL](https://graphql.org/)
-- [Swagger](https://swagger.io/) para documentação da API REST.
-- [dotenv](https://www.npmjs.com/package/dotenv) para gerenciamento de variáveis de ambiente.
-- [mysql2](https://www.npmjs.com/package/mysql2) como driver do MySQL.
+---
 
-## 🚀 Começando
+### 1. 🌍 Clonando o Universo Merqado
 
-Siga estas instruções para obter uma cópia do projeto em execução na sua máquina local para desenvolvimento e testes.
+Para começar a sua jornada, clone este repositório para a sua máquina local utilizando o seu terminal.
 
-### Pré-requisitos
-
-- Node.js (versão 16 ou superior)
-- NPM ou Yarn
-- Uma instância do MySQL em execução
-
-### Instalação
-
-1.  **Clone o repositório:**
-
-    ```bash
-    git clone <URL_DO_REPOSITORIO>
-    cd e-commerce-cart-api
-    ```
-
-2.  **Instale as dependências:**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Configure as variáveis de ambiente:**
-    Crie um arquivo `.env` na raiz do projeto, copiando o conteúdo de `.env.example`, e preencha com suas credenciais do MySQL.
-
-    ```
-    DB_HOST=localhost
-    DB_USER=seu_usuario
-    DB_PASSWORD=sua_senha
-    DB_NAME=ecommerce_cart_db
-    ```
-
-4.  **Configure o Banco de Dados:**
-    Execute o script SQL localizado em `database/schema.sql` no seu cliente MySQL para criar as tabelas e popular com dados de exemplo.
-
-5.  **Inicie o servidor:**
-    ```bash
-    npm start
-    ```
-    O servidor estará em execução em `http://localhost:3000`.
-
-## 🕹️ Como Usar
-
-### API REST (com Swagger)
-
-A documentação interativa do Swagger está disponível para testar os endpoints REST.
-
-- **URL do Swagger:** `http://localhost:3000/api-docs`
-
-**Exemplos com cURL:**
-
-- **Listar itens do carrinho `cart-test-123`:**
-
-  ```bash
-  curl -X GET http://localhost:3000/api/carts/cart-test-123
-  ```
-
-- **Adicionar um produto ao carrinho:**
-  ```bash
-  curl -X POST http://localhost:3000/api/carts/cart-test-123/items \
-  -H "Content-Type: application/json" \
-  -d '{ "productId": 4, "quantity": 1 }'
-  ```
-
-### API GraphQL
-
-Use um cliente GraphQL (como Insomnia, Postman ou o GraphiQL embutido) para interagir com o endpoint.
-
-- **URL do GraphQL Playground:** `http://localhost:3000/graphql`
-
-**Exemplo de Query:**
-
-```graphql
-query GetCart {
-  cart(id: "cart-test-123") {
-    id
-    total
-    items {
-      id
-      quantity
-      product {
-        name
-        price
-      }
-    }
-  }
-}
+```bash
+git clone [https://github.com/chriscsantosqa/ecommerce-api-m2.git](https://github.com/chriscsantosqa/ecommerce-api-m2.git)
+cd ecommerce-api-m2
 ```
 
-**Exemplo de Mutation:**
+### 2. 🧩 Instalando as Peças (Dependências)
 
-```graphql
-mutation AddItem {
-  addItemToCart(cartId: "cart-test-123", productId: 2, quantity: 1) {
-    id
-    total
-    items {
-      product {
-        name
-      }
-      quantity
-    }
-  }
-}
+O projeto é dividido em duas partes principais: a API e a Interface Web. Ambas precisam ter as suas dependências instaladas.
+
+**Instalando as dependências da API:**
+
+```bash
+cd ecommerce-api
+npm install
 ```
+
+**Instalando as dependências da Interface Web:**
+
+```bash
+# A partir da pasta raiz (ecommerce-api-m2)
+cd ecommerce-web
+npm install
+```
+
+### 3. 🏛️ Construindo a Fundação (Banco de Dados)
+
+A nossa API precisa de um banco de dados MySQL para funcionar. O script fornecido irá criar toda a estrutura de tabelas e inserir os dados iniciais necessários.
+
+**Pré-requisito:** Certifique-se de que tem um servidor MySQL a correr na sua máquina.
+
+**Executando o script:**
+Este comando irá apagar e recriar o banco de dados `ecommerce_cart_db`. Execute-o a partir da pasta `ecommerce-api`.
+
+```bash
+# Certifique-se de que está na pasta `ecommerce-api`
+mysql --host=localhost --user=userdb --password=senhadb ecommerce_cart_db < src/scripts/ecommerce-db.sql
+```
+
+> **Nota:** Os dados de utilizador (`userdb`) e senha (`senhadb`) devem corresponder aos que você irá configurar no passo seguinte.
+
+### 4. 🔑 Configurando os Segredos (.env)
+
+As chaves de API, credenciais de banco de dados e outras configurações sensíveis são geridas através de variáveis de ambiente.
+
+**1. Crie o ficheiro de configuração:**
+Na raiz da pasta `ecommerce-api`, crie um ficheiro chamado `.env`.
+
+**2. Copie e cole o conteúdo abaixo** para dentro do seu novo ficheiro `.env` e substitua os valores conforme necessário.
+
+```ini
+# Configuração do Servidor
+PORT=3005
+
+# Credenciais do Banco de Dados
+DB_HOST=localhost
+DB_USER=userdb
+DB_PASSWORD=senhadb
+DB_NAME=ecommerce_cart_db
+
+# Segredo para Tokens JWT (use um gerador de chaves seguras)
+JWT_SECRET="seu_segredo_super_secreto_para_jwt"
+
+# Configuração de E-mail (exemplo com Gmail)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_SECURE=true
+MAIL_USER=seu-email@gmail.com
+MAIL_PASS=sua_senha_de_app_de_16_digitos
+
+# Chave de API para o serviço interno de testes (use um gerador de chaves seguras)
+INTERNAL_API_KEY="sua_chave_secreta_para_o_servico_de_testes"
+```
+
+**Para o projeto Web (`ecommerce-web`):**
+Crie um ficheiro `.env` na raiz da pasta `ecommerce-web` para especificar a URL da API.
+
+```ini
+# ecommerce-web/.env
+REACT_APP_API_URL=http://localhost:3005
+```
+
+### 5. 💡 Dando Vida ao Projeto (Iniciando)
+
+Com tudo configurado, é hora de iniciar os dois serviços. Lembre-se de executar cada comando num terminal separado.
+
+**Iniciando a API (a partir da pasta `ecommerce-api`):**
+
+```bash
+npm start
+```
+
+O `nodemon` irá iniciar o servidor e vigiará as alterações nos ficheiros.
+
+**Iniciando a Interface Web (a partir da pasta `ecommerce-web`):**
+
+```bash
+npm start
+```
+
+A aplicação React será iniciada e abrirá automaticamente no seu navegador.
+
+### 6. 🧭 Navegando pelo Ecossistema
+
+Após iniciar os projetos, aqui estão os seus pontos de acesso:
+
+- **Interface Web (Loja):**
+
+  - [http://localhost:3000](http://localhost:3000)
+
+- **Documentação da API (Swagger):**
+
+  - [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
+
+- **Playground do GraphQL:**
+  - Aceda a [http://localhost:3005/graphql](http://localhost:3005/graphql) no seu navegador ou use um cliente de API como o Insomnia/Postman.
+
+### 7. 👤 Acesso de Administrador
+
+Para aceder à área administrativa do site e testar todas as funcionalidades, utilize as credenciais de administrador padrão que foram inseridas pelo script do banco de dados:
+
+- **Utilizador:** `admin`
+- **Senha:** `Admin@123`
+
+---
+
+<div align="center">
+  <strong>Feito! Agora você está pronto para explorar e desenvolver no universo Merqado. Boas codificações!</strong>
+</div>

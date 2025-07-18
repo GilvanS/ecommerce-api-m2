@@ -1,5 +1,5 @@
 # .github/workflows/ci.yml
-name: CI Ecommerce
+name: CI Ecommerce - API
 permissions:
   contents: write
 on:
