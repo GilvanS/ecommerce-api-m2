@@ -1,6 +1,7 @@
 # .github/workflows/ci.yml
 name: CI Ecommerce
-
+permissions:
+  contents: write
 on:
   push:
     branches: [main, develop]
@@ -52,7 +53,7 @@ jobs:
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
           cd ecommerce-api
-          git add allure-report allure-results
+          git add .
           # Verifica se há algo para comitar antes de tentar
           git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure"
           git push
