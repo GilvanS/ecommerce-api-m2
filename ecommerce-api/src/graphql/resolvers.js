@@ -31,7 +31,7 @@ module.exports = {
       whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
     // Lógica de Ordenação
-    let orderByString = "ORDER BY p.created_at DESC"; // Padrão: mais recentes primeiro
+    let orderByString = "ORDER BY p.created_at DESC";
     if (sortBy === "rating_desc") {
       orderByString = "ORDER BY p.rating DESC";
     }
