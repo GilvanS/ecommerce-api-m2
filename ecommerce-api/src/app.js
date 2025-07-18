@@ -22,7 +22,6 @@ const app_main = express_app();
 app_main.use(cors_app());
 app_main.use(express_app.json());
 
-/// Configuração do Swagger (NOVO)
 const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
@@ -48,7 +47,7 @@ const swaggerOptions = {
       },
     ],
   },
-  // Caminho para os arquivos que contêm as anotações do Swagger
+
   apis: ["./src/app.js", "./src/routes/*.js"],
 };
 
