@@ -1,0 +1,6 @@
+{
+  "watch": ["src/"],
+  "ext": "js,json",
+  "ignore": ["src/test/", "allure-results/*", "allure-report/*"],
+  "exec": "node src/server.js"
+}

@@ -4,7 +4,7 @@
   "description": "API REST e GraphQL para e-commerce com perfis, pedidos e admin.",
   "main": "src/server.js",
   "scripts": {
-    "start": "nodemon src/server.js",
+    "start": "nodemon",
     "test": "mocha --timeout 10000 --exit \"src/test/**/*.test.js\" --reporter allure-mocha"
   },
   "dependencies": {
