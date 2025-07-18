@@ -57,7 +57,6 @@ jobs:
           # Verifica se há algo para comitar antes de tentar
           git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure"
           git push
-          cd ..
           node scripts/publish-test-results.js
 
         env:
