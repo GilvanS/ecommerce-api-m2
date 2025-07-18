@@ -10,31 +10,7 @@ on:
 
 jobs:
   test-and-publish:
-    runs-on:
-      ubuntu-latest
-
-      # INÍCIO DA CORREÇÃO: Inicia um serviço de banco de dados MySQL
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: ecommerce_cart_db # O nome do DB que seus testes esperam
-          MYSQL_USER: userdb
-          MYSQL_PASSWORD: senhadb
-        ports:
-          - 3306:3306
-        # Garante que os testes só comecem depois que o DB estiver pronto
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-    # FIM DA CORREÇÃO
-    # Define o diretório de trabalho padrão para todos os passos deste job
-    defaults:
-      run:
-        working-directory: ./ecommerce-api
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout código
