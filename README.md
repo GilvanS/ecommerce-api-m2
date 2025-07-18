@@ -1,8 +1,8 @@
 <div align="center">
   <img src="https://i.imgur.com/your-logo-image-url.png" alt="Merqado Logo" width="150"/>
-  <h1>Projeto Merqado - API & Web</h1>
+  <h1>Projeto MerQAdo Livre! - API & Web</h1>
   <p>
-    <strong>Bem-vindo ao ecossistema Merqado!</strong> Este repositório contém a API robusta e a interface web moderna que compõem a nossa plataforma de e-commerce.
+    <strong>Bem-vindo ao ecossistema MerQAdo!</strong> Este repositório contém a API Interface Web que compõem a nossa plataforma de e-commerce.
   </p>
   <p>
     <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
@@ -15,7 +15,7 @@
 
 ## 🚀 Jornada de Configuração: Do Clone à Execução
 
-Este guia irá orientá-lo em todos os passos necessários para configurar e executar o ambiente de desenvolvimento completo do Merqado na sua máquina local.
+Este guia irá orientá-lo em todos os passos necessários para configurar e executar os projetos api e web do MerQAdo Livre na sua máquina local.
 
 ### Índice
 
@@ -36,7 +36,7 @@ Este guia irá orientá-lo em todos os passos necessários para configurar e exe
 Para começar a sua jornada, clone este repositório para a sua máquina local utilizando o seu terminal.
 
 ```bash
-git clone [https://github.com/chriscsantosqa/ecommerce-api-m2.git](https://github.com/chriscsantosqa/ecommerce-api-m2.git)
+git clone [https://github.com/chriscsantosqa/ecommerce-api-m2.git]
 cd ecommerce-api-m2
 ```
 
@@ -161,5 +161,5 @@ Para aceder à área administrativa do site e testar todas as funcionalidades, u
 ---
 
 <div align="center">
-  <strong>Feito! Agora você está pronto para explorar e desenvolver no universo Merqado. Boas codificações!</strong>
+  <strong>Feito! Agora você está pronto para explorar o MerQAdo Livre!</strong>
 </div>
