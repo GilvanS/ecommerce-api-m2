@@ -97,7 +97,7 @@ async function main() {
 
     const response = await fetch(API_URL, {
       method: "POST",
-      body: JSON.stringify(payload), // Envia o payload completo
+      body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
         "x-internal-api-key": API_KEY,
