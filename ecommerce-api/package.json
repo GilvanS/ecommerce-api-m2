@@ -5,8 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon",
-    "test2": "mocha --timeout 10000 --exit \"src/test/**/*.test.js\" --reporter allure-mocha",
-    "test": "mocha --timeout 10000 --exit \"src/test/**/*.test.js\""
+    "test": "mocha --timeout 10000 --exit \"src/test/**/*.test.js\" --reporter allure-mocha"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
