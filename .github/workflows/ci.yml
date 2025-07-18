@@ -58,13 +58,6 @@ jobs:
           allure --version
 
       - name: Executar testes (gerar Allure results)
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_USER: userdb
-          DB_PASSWORD: senhadb
-          DB_NAME: ecommerce_cart_db
-          JWT_SECRET: "uma_chave_secreta_para_ci"
         run: |
           cd ecommerce-api
           npm test

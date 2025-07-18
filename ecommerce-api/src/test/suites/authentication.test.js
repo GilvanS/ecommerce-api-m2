@@ -142,21 +142,8 @@ describe("Autenticação", () => {
     });
   });
 
-  describe("Recuperação de Senha", () => {
-    let testUser;
-    const knownRawToken = "abc-123-def-456";
-
-    before(async () => {
-      testUser = buildUser();
-      await dbHelper.cleanupUserByUsername(testUser.username);
-      await apiHelper.registerUser(testUser);
-      sinon.stub(crypto, "randomBytes").returns(Buffer.from(knownRawToken));
-    });
-
-    after(async () => {
-      await dbHelper.cleanupUserByUsername(testUser.username);
-    });
-
+  describe("Password Recovery", () => {
+    // Hooks para limpar os stubs do sinon após cada teste, garantindo o isolamento
     afterEach(() => {
       sinon.restore();
     });
@@ -168,7 +155,8 @@ describe("Autenticação", () => {
       allure.owner("QA - Chris C. Santos");
       allure.tag("Segurança", "Login");
 
-      const res = await apiHelper.forgotPassword(testUser.email);
+      // Este teste não precisa de stub, pois valida o comportamento padrão de segurança da API.
+      const res = await apiHelper.forgotPassword("qualquer-email@teste.com");
       expect(res.statusCode).to.equal(200);
       expect(res.body.message).to.equal(
         "Se um utilizador com este e-mail existir, um link de redefinição foi enviado."
@@ -182,11 +170,28 @@ describe("Autenticação", () => {
       allure.owner("QA - Chris C. Santos");
       allure.tag("Segurança", "Login");
 
-      await apiHelper.forgotPassword(testUser.email);
+      // --- INÍCIO DO STUB ---
+      // 1. Criamos um utilizador real para o fluxo completo
+      const testUser = buildUser();
+      await dbHelper.cleanupUserByUsername(testUser.username);
+      await apiHelper.registerUser(testUser);
 
+      // 2. Definimos um token previsível que será gerado
+      const knownRawToken = "token_previsivel_e_seguro_para_o_teste_123";
+
+      // 3. Criamos o stub: quando a aplicação chamar `crypto.randomBytes`,
+      //    ela receberá o nosso token previsível em vez de um aleatório.
+      sinon.stub(crypto, "randomBytes").returns(Buffer.from(knownRawToken));
+
+      // 4. Chamamos a função de esqueci a senha. A aplicação agora usará nosso token previsível.
+      await apiHelper.forgotPassword(testUser.email);
+      // --- FIM DO STUB ---
+
+      // 5. Preparamos o token para a chamada à API (geralmente em formato hexadecimal)
       const tokenForApi = Buffer.from(knownRawToken).toString("hex");
       const newPassword = "NewPassword@123";
 
+      // 6. Executamos a redefinição de senha com o nosso token agora válido
       const res = await apiHelper.resetPassword(tokenForApi, newPassword);
 
       expect(
@@ -195,6 +200,7 @@ describe("Autenticação", () => {
       ).to.equal(200);
       expect(res.body.message).to.include("Senha redefinida com sucesso.");
 
+      // 7. Verificação final: tentamos fazer login com a nova senha
       const loginRes = await apiHelper.loginUser({
         username: testUser.username,
         password: newPassword,
@@ -205,6 +211,9 @@ describe("Autenticação", () => {
         `Login falhou: ${loginRes.body.message}`
       ).to.equal(200);
       expect(loginRes.body).to.have.property("token");
+
+      // Limpeza do utilizador criado
+      await dbHelper.cleanupUserByUsername(testUser.username);
     });
 
     it("deve rejeitar redefinição de senha com token inválido", async () => {
@@ -213,6 +222,8 @@ describe("Autenticação", () => {
       );
       allure.owner("QA - Chris C. Santos");
       allure.tag("Segurança", "Login");
+
+      // Este teste não precisa de stub, pois valida a rejeição de um token заведомо inválido.
       const res = await apiHelper.resetPassword(
         "invalid-token",
         "NewPassword@123"
