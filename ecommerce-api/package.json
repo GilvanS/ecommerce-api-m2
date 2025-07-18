@@ -4,7 +4,8 @@
   "description": "API REST e GraphQL para e-commerce com perfis, pedidos e admin.",
   "main": "src/server.js",
   "scripts": {
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/server.js",
+    "test": "mocha --timeout 10000 --exit \"src/test/**/*.test.js\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,6 +22,10 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.2",
+    "sinon": "^21.0.0",
+    "supertest": "^6.3.3"
   }
 }
