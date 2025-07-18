@@ -59,7 +59,10 @@ const loginUserRaw = (credentials, headers = {}) => {
  * @param {string} username
  */
 const generateExpiredToken = (username) => {
-  const secret = process.env.JWT_SECRET || "secret";
+  const secret = process.env.JWT_SECRET; // Alterado para usar variável de ambiente
+  if (!secret) {
+    throw new Error("JWT_SECRET não definido nas variáveis de ambiente.");
+  }
   const now = Math.floor(Date.now() / 1000);
   return jwt.sign({ username, iat: now - 7200, exp: now - 3600 }, secret);
 };
@@ -69,8 +72,12 @@ const generateExpiredToken = (username) => {
  * @param {string} email
  */
 const generateExpiredResetToken = (email) => {
-  const secret =
-    process.env.RESET_PASSWORD_SECRET || process.env.JWT_SECRET || "secret";
+  const secret = process.env.RESET_PASSWORD_SECRET || process.env.JWT_SECRET; // Alterado
+  if (!secret) {
+    throw new Error(
+      "RESET_PASSWORD_SECRET ou JWT_SECRET não definido nas variáveis de ambiente."
+    );
+  }
   const now = Math.floor(Date.now() / 1000);
   return jwt.sign({ email, iat: now - 7200, exp: now - 3600 }, secret);
 };

@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 3005;
 // Função para garantir que o usuário admin exista com a senha correta
 const ensureAdminExists = async () => {
   try {
-    const adminUsername = "admin";
-    const adminPassword = "Admin@123"; // A senha em texto plano
+    const adminUsername = process.env.ADMIN_USER;
+    const adminPassword = process.env.ADMIN_PASSWORD;
 
     const [users] = await db.query("SELECT * FROM users WHERE username = ?", [
       adminUsername,

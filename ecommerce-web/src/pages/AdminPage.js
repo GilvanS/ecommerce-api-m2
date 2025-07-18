@@ -12,10 +12,14 @@ import { Spinner } from "../components/ui/Spinner";
 import { Input } from "../components/ui/Input";
 import { formatCurrency } from "../utils/formatters";
 import { Pagination } from "../components/ui/Pagination";
-import { DoughnutChart } from "../components/admin/DoughnutChart";
-import { BarChart } from "../components/admin/BarChart";
 import { ConfirmationModal } from "../components/ui/ConfirmationModal";
 import { useNotification } from "../context/NotificationContext";
+
+// Importando componentes de gráficos
+import { DoughnutChart } from "../components/admin/DoughnutChart";
+import { BarChart } from "../components/admin/BarChart";
+import { TestDoughnutChart } from "../components/admin/TestDoughnutChart";
+import { TestBarChart } from "../components/admin/TestBarChart";
 
 // Importando Ícones
 import {
@@ -26,6 +30,8 @@ import {
   X,
   KeyRound,
 } from "../components/shared/Icons";
+
+// --- MODAIS (Nenhuma alteração necessária aqui, permanecem os mesmos) ---
 
 const ProductFormModal = ({ product, categories, onClose, onSave }) => {
   const { values, errors, handleInputChange, isFormValid, setValues } = useForm(
@@ -359,11 +365,10 @@ const ResetPasswordModal = ({ user, onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword.length < 8) {
-      // CORREÇÃO: Substitui o alert() pela chamada ao modal
       showModal({
         title: "Senha Inválida",
         message: "A nova senha deve ter pelo menos 8 caracteres.",
-        onConfirm: () => {}, // Apenas fecha o modal
+        onConfirm: () => {},
       });
       return;
     }
@@ -417,15 +422,38 @@ const ResetPasswordModal = ({ user, onClose, onSave }) => {
     </div>
   );
 };
+
+const formatChartDate = (dateString) => {
+  if (!dateString || typeof dateString !== "string") {
+    return "Data Inválida";
+  }
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return "Data Inválida";
+  }
+
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+// --- COMPONENTE PRINCIPAL ---
+
 export const AdminPage = () => {
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [activeSubTab, setActiveSubTab] = useState("audit");
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState(null);
+
+  const [auditData, setAuditData] = useState(null);
+  const [testResultsData, setTestResultsData] = useState(null);
 
   const [pagination, setPagination] = useState({
     products: { currentPage: 1, totalPages: 1 },
@@ -452,16 +480,35 @@ export const AdminPage = () => {
     setLoading(true);
     try {
       if (activeTab === "dashboard") {
-        const { data } = await apiClient.get("/audit/summary");
-        setDashboardData(data);
+        const auditResponse = apiClient.get("/audit/summary");
+        const testResultsQuery = `
+            query GetTestDashboardData {
+                testDashboardData(limit: 20) {
+                    latestRun { 
+                        total_tests, passed, failed, skipped, created_at
+                        testCases { name, duration_ms, status }
+                    }
+                    historicalRuns { passed, failed, created_at }
+                }
+            }
+        `;
+        const testResultsResponse = graphqlClient(testResultsQuery);
+
+        const [auditRes, testRes] = await Promise.all([
+          auditResponse,
+          testResultsResponse,
+        ]);
+
+        setAuditData(auditRes.data);
+        setTestResultsData(testRes.testDashboardData);
       } else {
         const query = `
-                    query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
-                        products(page: $productsPage, limit: 15) { products { id name price stock category_id description imageUrl }, totalPages }
-                        categories(page: $categoriesPage, limit: 15) { categories { id name image_url }, totalPages }
-                        users(page: $usersPage, limit: 15) { users { id name username role }, totalPages }
-                    }
-                `;
+            query GetAdminData($productsPage: Int, $categoriesPage: Int, $usersPage: Int) {
+                products(page: $productsPage, limit: 15) { products { id name price stock category_id description imageUrl discount_price is_new is_trending }, totalPages }
+                categories(page: $categoriesPage, limit: 15) { categories { id name image_url }, totalPages }
+                users(page: $usersPage, limit: 15) { users { id name username role }, totalPages }
+            }
+        `;
         const variables = {
           productsPage: pagination.products.currentPage,
           categoriesPage: pagination.categories.currentPage,
@@ -641,6 +688,49 @@ export const AdminPage = () => {
     );
   }
 
+  const renderStatusBadge = (status) => {
+    const baseClasses = "px-2 py-1 text-xs font-semibold rounded-full";
+    switch (status) {
+      case "passed":
+        return (
+          <span className={`${baseClasses} bg-green-100 text-green-800`}>
+            Aprovado
+          </span>
+        );
+      case "failed":
+      case "broken":
+        return (
+          <span className={`${baseClasses} bg-red-100 text-red-800`}>
+            Falhou
+          </span>
+        );
+      case "skipped":
+        return (
+          <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>
+            Ignorado
+          </span>
+        );
+      default:
+        return (
+          <span className={`${baseClasses} bg-gray-100 text-gray-800`}>
+            {status}
+          </span>
+        );
+    }
+  };
+
+  // --- INÍCIO DA CORREÇÃO ---
+  const formatDuration = (ms) => {
+    if (typeof ms !== "number" || ms < 0) {
+      return "-";
+    }
+    if (ms < 1000) {
+      return `${ms}ms`;
+    }
+    return `${(ms / 1000).toFixed(3)}s`;
+  };
+  // --- FIM DA CORREÇÃO ---
+
   return (
     <div className="container mx-auto px-4 py-8">
       {isProductModalOpen && (
@@ -712,13 +802,34 @@ export const AdminPage = () => {
           >
             Dashboard
           </button>
-          <button onClick={() => setActiveTab("products")} className={`...`}>
+          <button
+            onClick={() => setActiveTab("products")}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === "products"
+                ? "border-merqado-blue text-merqado-blue"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
             Gerenciar Produtos
           </button>
-          <button onClick={() => setActiveTab("categories")} className={`...`}>
+          <button
+            onClick={() => setActiveTab("categories")}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === "categories"
+                ? "border-merqado-blue text-merqado-blue"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
             Gerenciar Categorias
           </button>
-          <button onClick={() => setActiveTab("users")} className={`...`}>
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === "users"
+                ? "border-merqado-blue text-merqado-blue"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
             Gerenciar Usuários
           </button>
         </nav>
@@ -731,18 +842,144 @@ export const AdminPage = () => {
       ) : (
         <>
           <div className={activeTab === "dashboard" ? "" : "hidden"}>
-            {dashboardData ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <DoughnutChart chartData={dashboardData.actionsByType} />
+            <div className="mb-6 border-b border-gray-200">
+              <nav className="-mb-px flex space-x-6" aria-label="Sub-tabs">
+                <button
+                  onClick={() => setActiveSubTab("audit")}
+                  className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSubTab === "audit"
+                      ? "border-merqado-orange text-merqado-orange"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Auditoria
+                </button>
+                <button
+                  onClick={() => setActiveSubTab("test_results")}
+                  className={`whitespace-nowrap pb-2 px-1 border-b-2 font-medium text-sm ${
+                    activeSubTab === "test_results"
+                      ? "border-merqado-orange text-merqado-orange"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Resultados dos Testes
+                </button>
+              </nav>
+            </div>
+
+            <div className={activeSubTab === "audit" ? "" : "hidden"}>
+              {auditData ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h3 className="text-lg font-semibold text-center mb-4">
+                      Ações por Tipo
+                    </h3>
+                    <DoughnutChart chartData={auditData.actionsByType} />
+                  </div>
+                  <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h3 className="text-lg font-semibold text-center mb-4">
+                      Atividade por Dia
+                    </h3>
+                    <BarChart chartData={auditData.activityByDay} />
+                  </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                  <BarChart chartData={dashboardData.activityByDay} />
+              ) : (
+                <p className="text-center text-slate-500 py-10">
+                  Não há dados de auditoria para exibir.
+                </p>
+              )}
+            </div>
+
+            <div className={activeSubTab === "test_results" ? "" : "hidden"}>
+              {testResultsData && testResultsData.latestRun ? (
+                <div className="space-y-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                      <h3 className="text-lg font-semibold text-center mb-4">
+                        Última Execução de Testes
+                      </h3>
+                      <TestDoughnutChart
+                        chartData={{
+                          Aprovados: testResultsData.latestRun.passed,
+                          Falhas: testResultsData.latestRun.failed,
+                          Ignorados: testResultsData.latestRun.skipped,
+                        }}
+                      />
+                    </div>
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                      <h3 className="text-lg font-semibold text-center mb-4">
+                        Tendência de Falhas (Últimas Execuções)
+                      </h3>
+                      <TestBarChart
+                        chartData={testResultsData.historicalRuns.reduce(
+                          (acc, run) => {
+                            const formattedDate = formatChartDate(
+                              run.created_at
+                            );
+                            if (formattedDate !== "Data Inválida") {
+                              acc[formattedDate] =
+                                (acc[formattedDate] || 0) + run.failed;
+                            }
+                            return acc;
+                          },
+                          {}
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h3 className="text-lg font-semibold mb-4">
+                      Detalhes da Última Execução
+                    </h3>
+                    <div className="overflow-x-auto max-h-96">
+                      <table className="w-full text-sm text-left text-gray-500">
+                        <thead className="text-xs text-gray-700 uppercase bg-merqado-gray-light sticky top-0">
+                          <tr>
+                            <th scope="col" className="px-4 py-3">
+                              Nome do Teste
+                            </th>
+                            <th scope="col" className="px-4 py-3">
+                              Duração
+                            </th>
+                            <th scope="col" className="px-4 py-3">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {testResultsData.latestRun.testCases &&
+                            testResultsData.latestRun.testCases.map(
+                              (testCase, index) => (
+                                <tr
+                                  key={index}
+                                  className="bg-white border-b hover:bg-merqado-gray-light/50"
+                                >
+                                  <td className="px-4 py-2 font-medium text-gray-900">
+                                    {testCase.name}
+                                  </td>
+                                  {/* --- INÍCIO DA CORREÇÃO --- */}
+                                  <td className="px-4 py-2">
+                                    {formatDuration(testCase.duration_ms)}
+                                  </td>
+                                  {/* --- FIM DA CORREÇÃO --- */}
+                                  <td className="px-4 py-2">
+                                    {renderStatusBadge(testCase.status)}
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p>Não há dados de auditoria para exibir.</p>
-            )}
+              ) : (
+                <p className="text-center text-slate-500 py-10">
+                  Não há dados de execução de testes para exibir.
+                </p>
+              )}
+            </div>
           </div>
 
           <div className={activeTab === "products" ? "" : "hidden"}>

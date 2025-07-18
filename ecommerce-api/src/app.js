@@ -1,6 +1,7 @@
 const express_app = require("express");
 const cors_app = require("cors");
 const { graphqlHTTP } = require("express-graphql");
+const internalRoutes = require("./routes/internalRoutes");
 const userRoutes = require("./routes/userRoutes");
 const favoritesRoutes = require("./routes/favoritesRoutes");
 const orderRoutes = require("./routes/orderRoutes");
@@ -78,6 +79,7 @@ app_main.use(
 );
 
 // REST API Routes
+app_main.use("/api/internal", internalRoutes);
 app_main.use("/api/products", productRoutes);
 app_main.use("/api/users", userRoutes);
 app_main.use("/api/orders", authMiddleware, orderRoutes);

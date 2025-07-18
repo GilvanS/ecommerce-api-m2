@@ -10,7 +10,28 @@ module.exports = buildSchema(`
         image_url: String
         products: [Product]
     }
+    type TestCase {
+      id: ID!
+      name: String!
+      duration_ms: Int
+      status: String!
+    }
+    type TestRun {
+        id: ID!
+        total_tests: Int!
+        passed: Int!
+        failed: Int!
+        skipped: Int!
+        duration_ms: Int
+        run_at: String! 
+        created_at: String! 
+        testCases: [TestCase]
+    }
 
+    type TestDashboardData {
+        latestRun: TestRun
+        historicalRuns: [TestRun]
+    }
     type Product { 
         id: ID!
         name: String!
@@ -55,6 +76,7 @@ module.exports = buildSchema(`
         profile: User
         orders(page: Int, limit: Int): PaginatedOrders
         favorites: [Product]
+        testDashboardData(limit: Int = 20): TestDashboardData
     }
 
     type Mutation {

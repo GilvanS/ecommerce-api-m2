@@ -13,11 +13,21 @@ import {
   useNotification,
 } from "./context/NotificationContext";
 import { ToastProvider } from "./context/ToastContext";
-import { QASidebar } from "./components/academy/QASidebar";
 
-// Importando Páginas
+// Componentes Globais
+import { QASidebar } from "./components/academy/QASidebar";
+import { NotificationModal } from "./components/ui/NotificationModal";
+import { Spinner } from "./components/ui/Spinner";
+import { SalesToast } from "./components/ui/SalesToast";
+import { Header } from "./components/layout/Header";
+import { Footer } from "./components/layout/Footer";
+import { BookOpen } from "./components/shared/Icons";
+
+// Páginas
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { CartPage } from "./pages/CartPage";
 import { OrdersPage } from "./pages/OrdersPage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -30,27 +40,15 @@ import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
 import { OffersPage } from "./pages/OffersPage";
-import { ForgotPasswordPage } from "./pages/ForgotPasswordPage"; // NOVO
-import { ResetPasswordPage } from "./pages/ResetPasswordPage"; // NOVO
 
-// Importando Componentes de Layout e UI
-import { Header } from "./components/layout/Header";
-import { Footer } from "./components/layout/Footer";
-import { Spinner } from "./components/ui/Spinner";
-import { NotificationModal } from "./components/ui/NotificationModal";
-import { SalesToast } from "./components/ui/SalesToast";
-import { BookOpen } from "./components/shared/Icons";
-
-// Importando Funções de API
+// Cliente GraphQL/API
 import { graphqlClient } from "./api/client";
 
-// Componente que gerencia o conteúdo principal da aplicação
 const AppContent = () => {
   const { isAuthenticated, loading, logout } = useAuth();
   const { showModal, modalState } = useNotification();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // detecta rota inicial para login/forgot/reset
   const getInitialPage = () => {
     const path = window.location.pathname;
     if (path === "/reset-password") return "resetPassword";
@@ -59,7 +57,6 @@ const AppContent = () => {
   };
   const [page, setPage] = useState(getInitialPage);
 
-  // listener de erro de auth
   useEffect(() => {
     const onAuthError = () => {
       logout();
@@ -75,23 +72,50 @@ const AppContent = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center">
-        <Spinner />
-      </div>
+      <>
+        <QASidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+        <button
+          className="fixed bottom-4 left-4 z-50 p-3 bg-merqado-blue rounded-full shadow-lg"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <BookOpen className="w-6 h-6 text-white" />
+        </button>
+        <NotificationModal {...modalState} />
+        <div className="h-screen w-screen flex items-center justify-center">
+          <Spinner />
+        </div>
+      </>
     );
   }
 
-  // se autenticado, exibe dashboard
+  const SidebarWrapper = ({ children }) => (
+    <>
+      <QASidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      <button
+        className="fixed bottom-4 left-4 z-50 p-3 bg-merqado-blue rounded-full shadow-lg"
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        <BookOpen className="w-6 h-6 text-white" />
+      </button>
+      <NotificationModal {...modalState} />
+      {children}
+    </>
+  );
+
   if (isAuthenticated) {
-    return <Dashboard />;
+    return (
+      <SidebarWrapper>
+        <Dashboard />
+      </SidebarWrapper>
+    );
   }
 
-  // Se autenticado, vai para o Dashboard completo
-  if (isAuthenticated) {
-    return <Dashboard />;
-  }
-
-  // Se não autenticado, renderiza a página de auth conforme "page"
   const renderAuthPage = () => {
     switch (page) {
       case "forgotPassword":
@@ -104,9 +128,9 @@ const AppContent = () => {
     }
   };
 
-  return <>{renderAuthPage()}</>;
+  return <SidebarWrapper>{renderAuthPage()}</SidebarWrapper>;
 };
-// Componente que renderiza a aplicação quando o usuário está autenticado
+
 const Dashboard = () => {
   const { isAuthenticated } = useAuth();
   const [page, setPage] = useState("home");
@@ -142,7 +166,6 @@ const Dashboard = () => {
         }
       `;
       const data = await graphqlClient(query, { search: term });
-      // Extrai a lista de produtos de dentro do objeto de paginação
       setSearchResults(data.products.products || []);
     } catch (error) {
       console.error("Search failed", error);
@@ -157,6 +180,7 @@ const Dashboard = () => {
     setSelectedProductId(productId);
     setPage("productDetail");
   };
+
   const handleSelectCategory = (categoryId) => {
     setSelectedCategoryId(categoryId);
     setPage("categoryProducts");
@@ -210,10 +234,6 @@ const Dashboard = () => {
         );
       case "offers":
         return <OffersPage onProductSelect={handleSelectProduct} />;
-      case "forgotPassword":
-        return <ForgotPasswordPage setPage={setPage} />;
-      case "resetPassword":
-        return <ResetPasswordPage setPage={setPage} />;
       default:
         return (
           <HomePage
@@ -234,43 +254,40 @@ const Dashboard = () => {
         setSearchTerm={setSearchTerm}
       />
       <SalesToast onProductSelect={handleSelectProduct} />
-      <main className="flex-grow"> {renderPage()}</main>
+      <main className="flex-grow">{renderPage()}</main>
       <Footer />
     </div>
   );
 };
 
-// Componente Raiz da Aplicação
-const App = () => {
-  return (
-    <AuthProvider>
-      <NotificationProvider>
-        <FavoritesProvider>
-          <CartProvider>
-            <ToastProvider>
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  className: "",
-                  style: {
-                    background: "rgba(247, 246, 246, 0.92)",
-                    border: "1px solid rgba(109, 109, 109, 0.14)",
-                    color: "#333333",
-                    padding: "16px",
-                    borderRadius: "12px",
-                    backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)", // necessário para Safari
-                    boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-                  },
-                }}
-              />
-              <AppContent />
-            </ToastProvider>
-          </CartProvider>
-        </FavoritesProvider>
-      </NotificationProvider>
-    </AuthProvider>
-  );
-};
+const App = () => (
+  <AuthProvider>
+    <NotificationProvider>
+      <FavoritesProvider>
+        <CartProvider>
+          <ToastProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: "",
+                style: {
+                  background: "rgba(247, 246, 246, 0.92)",
+                  border: "1px solid rgba(109, 109, 109, 0.14)",
+                  color: "#333333",
+                  padding: "16px",
+                  borderRadius: "12px",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                },
+              }}
+            />
+            <AppContent />
+          </ToastProvider>
+        </CartProvider>
+      </FavoritesProvider>
+    </NotificationProvider>
+  </AuthProvider>
+);
 
 export default App;

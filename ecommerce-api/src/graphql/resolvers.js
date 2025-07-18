@@ -229,4 +229,47 @@ module.exports = {
       totalPages,
     };
   },
+  testDashboardData: async ({ limit = 20 }, context) => {
+    if (!context.user || context.user.role !== "admin") {
+      throw new Error("Acesso negado.");
+    }
+
+    try {
+      const [latestRuns] = await db_gql.query(
+        "SELECT * FROM test_runs ORDER BY created_at DESC LIMIT 1"
+      );
+      const [historicalRuns] = await db_gql.query(
+        "SELECT * FROM test_runs ORDER BY created_at DESC LIMIT ?",
+        [limit]
+      );
+
+      const formatRuns = async (runs) => {
+        // Usamos Promise.all para buscar os detalhes de cada execução em paralelo
+        return Promise.all(
+          runs.map(async (run) => {
+            const [testCases] = await db_gql.query(
+              "SELECT * FROM test_case_results WHERE test_run_id = ?",
+              [run.id]
+            );
+            return {
+              ...run,
+              created_at: run.created_at
+                ? new Date(run.created_at).toISOString()
+                : null,
+              testCases: testCases, // Anexa os detalhes ao objeto de execução
+            };
+          })
+        );
+      };
+
+      return {
+        latestRun:
+          latestRuns.length > 0 ? (await formatRuns(latestRuns))[0] : null,
+        historicalRuns: await formatRuns(historicalRuns),
+      };
+    } catch (error) {
+      console.error("Erro ao buscar dados do dashboard de testes:", error);
+      throw new Error("Erro de servidor ao buscar dados do dashboard.");
+    }
+  },
 };
