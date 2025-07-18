@@ -51,10 +51,12 @@ jobs:
         run: |
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'actions@github.com'
+          cd ecommerce-api
           git add allure-report allure-results
           # Verifica se há algo para comitar antes de tentar
           git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure"
           git push
+          cd ..
           node scripts/publish-test-results.js
 
         env:
