@@ -37,7 +37,7 @@ const ensureAdminExists = async () => {
         adminUsername,
         hashedPassword,
         "admin",
-        "chriscsantos.qa@gmail.com",
+        "teste@teste.com",
       ]);
       console.log("Usuário admin criado com sucesso!");
     } else {
