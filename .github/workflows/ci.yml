@@ -10,7 +10,31 @@ on:
 
 jobs:
   test-and-publish:
-    runs-on: ubuntu-latest
+    runs-on:
+      ubuntu-latest
+
+      # INÍCIO DA CORREÇÃO: Inicia um serviço de banco de dados MySQL
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ecommerce_cart_db # O nome do DB que seus testes esperam
+          MYSQL_USER: userdb
+          MYSQL_PASSWORD: senhadb
+        ports:
+          - 3306:3306
+        # Garante que os testes só comecem depois que o DB estiver pronto
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    # FIM DA CORREÇÃO
+    # Define o diretório de trabalho padrão para todos os passos deste job
+    defaults:
+      run:
+        working-directory: ./ecommerce-api
 
     steps:
       - name: Checkout código
@@ -34,9 +58,16 @@ jobs:
           allure --version
 
       - name: Executar testes (gerar Allure results)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: userdb
+          DB_PASSWORD: senhadb
+          DB_NAME: ecommerce_cart_db
+          JWT_SECRET: "uma_chave_secreta_para_ci"
         run: |
           cd ecommerce-api
-          npm test -- --reporter allure-mocha
+          npm test
         # Continuar mesmo que os testes falhem, para que possamos publicar os resultados
         continue-on-error: true
 
@@ -51,9 +82,9 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           git config --global user.name 'GitHub Actions Bot'
-          git config --global user.email 'actions@github.com'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           cd ecommerce-api
-          git add .
+          git add allure-report allure-results
           # Verifica se há algo para comitar antes de tentar
           git diff --staged --quiet || git commit -m "CI: Atualiza relatório de testes Allure"
           git push
