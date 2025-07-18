@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://i.imgur.com/your-logo-image-url.png" alt="Merqado Logo" width="150"/>
+  <img src="https://i.postimg.cc/hD7WRszS/logo-merqado.webp" alt="MerQAdo Logo" width="150"/>
   <h1>Projeto MerQAdo Livre! - API & Web</h1>
   <p>
     <strong>Bem-vindo ao ecossistema MerQAdo!</strong> Este repositório contém a API Interface Web que compõem a nossa plataforma de e-commerce.
