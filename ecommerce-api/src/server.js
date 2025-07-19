@@ -69,6 +69,7 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     console.log(`Servidor back-end v3.1 rodando na porta ${PORT}`);
+    console.log(`Swagger em http://localhost:${PORT}/api-docs/`);
     console.log(`GraphQL Playground em http://localhost:${PORT}/graphql`);
   });
 };

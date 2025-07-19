@@ -36,7 +36,7 @@ Este guia irá orientá-lo em todos os passos necessários para configurar e exe
 Para começar a sua jornada, clone este repositório para a sua máquina local utilizando o seu terminal.
 
 ```bash
-git clone [https://github.com/chriscsantosqa/ecommerce-api-m2.git]
+git clone https://github.com/chriscsantosqa/ecommerce-api-m2.git
 cd ecommerce-api-m2
 ```
 
@@ -149,11 +149,11 @@ Após iniciar os projetos, aqui estão os seus pontos de acesso:
   - [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
 
 - **Playground do GraphQL:**
-  - Aceda a [http://localhost:3005/graphql](http://localhost:3005/graphql) no seu navegador ou use um cliente de API como o Insomnia/Postman.
+  - [http://localhost:3005/graphql](http://localhost:3005/graphql)
 
 ### 7. 👤 Acesso de Administrador
 
-Para aceder à área administrativa do site e testar todas as funcionalidades, utilize as credenciais de administrador padrão que foram inseridas pelo script do banco de dados:
+Para acessar à área administrativa do site e testar todas as funcionalidades, utilize as credenciais de administrador padrão que foram inseridas pelo script do banco de dados:
 
 - **Utilizador:** `admin`
 - **Senha:** `Admin@123`
