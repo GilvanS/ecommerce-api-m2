@@ -160,6 +160,18 @@ Para acessar à área administrativa do site e testar todas as funcionalidades, 
 
 ---
 
+### 7. 👤 Gerar dados de Resultado de Testes
+
+Para gerar dados de Resultado de Testes no Dashboard da aplicação execute os comandos abaixo no PowerShell:
+
+```bash
+npm test
+
+$env:TEST_RESULTS_API_URL="http://localhost:3005/api/internal/test-results"; $env:INTERNAL_API_KEY="sua_chave_secreta"; node scripts/publish-test-results.js
+```
+
+---
+
 <div align="center">
   <strong>Feito! Agora você está pronto para explorar o MerQAdo Livre!</strong>
 </div>
