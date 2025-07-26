@@ -28,6 +28,7 @@ Este guia irá orientá-lo em todos os passos necessários para configurar e exe
   - [5. 💡 Dando Vida ao Projeto (Iniciando)](#5--dando-vida-ao-projeto-iniciando)
   - [6. 🧭 Navegando pelo Ecossistema](#6--navegando-pelo-ecossistema)
   - [7. 👤 Acesso de Administrador](#7--acesso-de-administrador)
+  - [8. 🔧 Solução de Problemas](#8--solução-de-problemas)
 
 ---
 
@@ -86,13 +87,13 @@ Na raiz da pasta `ecommerce-api`, crie um ficheiro chamado `.env`.
 
 ```ini
 # Configuração do Servidor
-PORT=3005
+PORT=3006
 
 # Credenciais do Banco de Dados
 DB_HOST=localhost
-DB_USER=userdb
-DB_PASSWORD=senhadb
-DB_NAME=ecommerce_cart_db
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=merqado
 
 # Segredo para Tokens JWT (use um gerador de chaves seguras)
 JWT_SECRET="seu_segredo_super_secreto_para_jwt"
@@ -101,19 +102,19 @@ JWT_SECRET="seu_segredo_super_secreto_para_jwt"
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=465
 MAIL_SECURE=true
-MAIL_USER=seu-email@gmail.com
-MAIL_PASS=sua_senha_de_app_de_16_digitos
+MAIL_USER=gillvanjs@gmail.com
+MAIL_PASS=KLAUSS703961*
 
 # Chave de API para o serviço interno de testes (use um gerador de chaves seguras)
 INTERNAL_API_KEY="sua_chave_secreta_para_o_servico_de_testes"
 ```
 
 **Para o projeto Web (`ecommerce-web`):**
-Crie um ficheiro `.env` na raiz da pasta `ecommerce-web` para especificar a URL da API.
+Crie um ficheiro `.env` na raiz da pasta `ecommerce-web` para especificar a URL da API. **A porta deve ser a mesma definida no `.env` da API.**
 
 ```ini
 # ecommerce-web/.env
-REACT_APP_API_URL=http://localhost:3005
+REACT_APP_API_URL=http://localhost:3006
 ```
 
 ### 5. 💡 Dando Vida ao Projeto (Iniciando)
@@ -146,10 +147,10 @@ Após iniciar os projetos, aqui estão os seus pontos de acesso:
 
 - **Documentação da API (Swagger):**
 
-  - [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
+  - [http://localhost:3006/api-docs](http://localhost:3006/api-docs)
 
 - **Playground do GraphQL:**
-  - [http://localhost:3005/graphql](http://localhost:3005/graphql)
+  - [http://localhost:3006/graphql](http://localhost:3006/graphql)
 
 ### 7. 👤 Acesso de Administrador
 
@@ -160,14 +161,34 @@ Para acessar à área administrativa do site e testar todas as funcionalidades, 
 
 ---
 
-### 7. 👤 Gerar dados de Resultado de Testes
+### 8. 🔧 Solução de Problemas
+
+#### Erro: `EADDRINUSE: address already in use`
+
+Ao tentar iniciar a API com `npm start`, você pode encontrar um erro como:
+
+```
+Error: listen EADDRINUSE: address already in use :::3005
+```
+
+**Causa:** Este erro significa que a porta definida no seu arquivo `ecommerce-api/.env` (por padrão, `3005` ou `3006`) já está sendo utilizada por outro programa no seu computador.
+
+**Solução:**
+1.  Abra o arquivo `ecommerce-api/.env`.
+2.  Altere o valor da variável `PORT` para um número de porta que não esteja em uso (ex: `3007`, `3008`, etc.).
+3.  **Importante:** Se você alterar a porta da API, lembre-se de atualizar também o arquivo `ecommerce-web/.env`, modificando o valor de `REACT_APP_API_URL` para que a porta seja a mesma da API.
+4.  Tente iniciar a API novamente com `npm start`.
+
+---
+
+### 9. 👤 Gerar dados de Resultado de Testes
 
 Para gerar dados de Resultado de Testes no Dashboard da aplicação execute os comandos abaixo no PowerShell:
 
 ```bash
 npm test
 
-$env:TEST_RESULTS_API_URL="http://localhost:3005/api/internal/test-results"; $env:INTERNAL_API_KEY="sua_chave_secreta"; node scripts/publish-test-results.js
+$env:TEST_RESULTS_API_URL="http://localhost:3006/api/internal/test-results"; $env:INTERNAL_API_KEY="sua_chave_secreta"; node scripts/publish-test-results.js
 ```
 
 ---
